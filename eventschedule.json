@@ -136,7 +136,7 @@
       "georgian_date": "Thursday, June 25",
       "time": "14:00",
       "event": "Shahadat Imam Hussain (AS) - Juloos",
-      "maulana": "",
+      "maulana": "Syed Rehan Haider",
       "sponsors": "Matami Dasta Dua e Zahra (AS)",
       "address": "7900 Backlick Rd, Springfield, VA 22150"
     },
@@ -146,7 +146,7 @@
       "georgian_date": "Thursday, June 25",
       "time": "20:57",
       "event": "Namaz e Maghribain followed by Sham e Gharibaan",
-      "maulana": "",
+      "maulana": "Syed Rehan Haider",
       "sponsors": "Community",
       "address": "7900 Backlick Rd, Springfield, VA 22150"
     },
@@ -176,7 +176,7 @@
       "georgian_date": "Saturday, June 27",
       "time": "17:30",
       "event": "Soyem Imam Hussain (AS)",
-      "maulana": "",
+      "maulana": "Syed Rehan Haider",
       "sponsors": "Br. Manzoor Zaidi Family",
       "address": "7900 Backlick Rd, Springfield, VA 22150"
     },
@@ -257,7 +257,7 @@
       "time": "21:30",
       "event": "Majlis",
       "maulana": "Syeda Iffat Ishrat Jafri",
-      "sponsors": "Sister Aruj",
+      "sponsors": "Sister Sister Aruj",
       "address": "12029 Tango Lane, Woodbridge VA 22193"
     },
     {
@@ -281,7 +281,7 @@
       "address": "12029 Tango Lane, Woodbridge VA 22193"
     },
     {
-      "type": "Men",
+      "type": "General",
       "islamic_date": "20 Muharram",
       "georgian_date": "Sunday, July 5",
       "time": "TBA",
@@ -291,17 +291,47 @@
       "address": "7900 Backlick Rd, Springfield, VA 22150"
     },
     {
-      "type": "Men",
+      "type": "General",
+      "islamic_date": "21 Muharram",
+      "georgian_date": "Monday, July 6",
+      "time": "TBA",
+      "event": "Majlis",
+      "maulana": "Mehdi Hasan Waez",
+      "sponsors": "",
+      "address": "7900 Backlick Rd, Springfield, VA 22150"
+    },
+    {
+      "type": "General",
+      "islamic_date": "22 Muharram",
+      "georgian_date": "Tuesday, July 7",
+      "time": "TBA",
+      "event": "Majlis",
+      "maulana": "Mehdi Hasan Waez",
+      "sponsors": "",
+      "address": "7900 Backlick Rd, Springfield, VA 22150"
+    },
+    {
+      "type": "General",
+      "islamic_date": "23 Muharram",
+      "georgian_date": "Wednesday, July 8",
+      "time": "TBA",
+      "event": "Majlis",
+      "maulana": "Mehdi Hasan Waez",
+      "sponsors": "",
+      "address": "7900 Backlick Rd, Springfield, VA 22150"
+    },
+    {
+      "type": "General",
       "islamic_date": "24 Muharram",
       "georgian_date": "Thursday, July 9",
       "time": "TBA",
       "event": "Shab e Shahadat Imam Zain Ul Abideen (AS) - Taboot",
-      "maulana": "",
+      "maulana": "Mehdi Hasan Waez",
       "sponsors": "Br. Jawwad Bukhari & Sons",
       "address": "7900 Backlick Rd, Springfield, VA 22150"
     },
     {
-      "type": "Men",
+      "type": "General",
       "islamic_date": "30 Muharram",
       "georgian_date": "Wednesday, July 15",
       "time": "TBA",
@@ -311,12 +341,32 @@
       "address": "7900 Backlick Rd, Springfield, VA 22150"
     },
     {
-      "type": "Men",
+      "type": "General",
       "islamic_date": "1 Safar",
       "georgian_date": "Thursday, July 16",
       "time": "TBA",
       "event": "Ahl e Haram (AS) reached Shaam (Syria)",
-      "maulana": "",
+      "maulana": "Dr. Salman Turabi",
+      "sponsors": "",
+      "address": "7900 Backlick Rd, Springfield, VA 22150"
+    },
+    {
+      "type": "General",
+      "islamic_date": "2 Safar",
+      "georgian_date": "Friday, July 17",
+      "time": "TBA",
+      "event": "Majlis",
+      "maulana": "Dr. Salman Turabi",
+      "sponsors": "",
+      "address": "7900 Backlick Rd, Springfield, VA 22150"
+    },
+    {
+      "type": "General",
+      "islamic_date": "3 Safar",
+      "georgian_date": "Saturday, July 18",
+      "time": "TBA",
+      "event": "Majlis",
+      "maulana": "Dr. Salman Turabi",
       "sponsors": "",
       "address": "7900 Backlick Rd, Springfield, VA 22150"
     },
@@ -324,10 +374,20 @@
       "type": "Ladies",
       "islamic_date": "4 Safar",
       "georgian_date": "Sunday, July 19",
-      "time": "13:00",
+      "time": "1:00 PM",
       "event": "Ladies Majlis",
       "maulana": "TBD",
       "sponsors": "Sister Sadaf Rizvi",
+      "address": "7900 Backlick Rd, Springfield, VA 22150"
+    },
+    {
+      "type": "General",
+      "islamic_date": "4 Safar",
+      "georgian_date": "Sunday, July 19",
+      "time": "TBA",
+      "event": "Majlis",
+      "maulana": "Dr. Salman Turabi",
+      "sponsors": "",
       "address": "7900 Backlick Rd, Springfield, VA 22150"
     },
     {
@@ -341,22 +401,102 @@
       "address": "7900 Backlick Rd, Springfield, VA 22150"
     },
     {
-      "type": "Men",
+      "type": "General",
+      "islamic_date": "12 Safar",
+      "georgian_date": "Monday, July 27",
+      "time": "TBA",
+      "event": "Shab e Shahadat Bibi Sakina (AS)",
+      "maulana": "Syed Irtiza Abbas Naqvi",
+      "sponsors": "",
+      "address": "7900 Backlick Rd, Springfield, VA 22150"
+    },
+    {
+      "type": "General",
       "islamic_date": "13 Safar",
       "georgian_date": "Tuesday, July 28",
       "time": "TBA",
       "event": "Shahadat Bibi Sakina (AS)",
-      "maulana": "",
+      "maulana": "Syed Irtiza Abbas Naqvi",
       "sponsors": "Br. Dr. Syed Iftikhar Zaidi",
       "address": "7900 Backlick Rd, Springfield, VA 22150"
     },
     {
-      "type": "Men",
+      "type": "General",
+      "islamic_date": "14 Safar",
+      "georgian_date": "Wednesday, July 29",
+      "time": "TBA",
+      "event": "Majlis",
+      "maulana": "Syed Irtiza Abbas Naqvi",
+      "sponsors": "",
+      "address": "7900 Backlick Rd, Springfield, VA 22150"
+    },
+    {
+      "type": "General",
+      "islamic_date": "15 Safar",
+      "georgian_date": "Thursday, July 30",
+      "time": "TBA",
+      "event": "Majlis",
+      "maulana": "Syed Irtiza Abbas Naqvi",
+      "sponsors": "",
+      "address": "7900 Backlick Rd, Springfield, VA 22150"
+    },
+    {
+      "type": "General",
+      "islamic_date": "16 Safar",
+      "georgian_date": "Friday, July 31",
+      "time": "TBA",
+      "event": "Shab e Shahadat Imam Ali Reza (AS) - Taboot",
+      "maulana": "Syed Irtiza Abbas Naqvi",
+      "sponsors": "",
+      "address": "7900 Backlick Rd, Springfield, VA 22150"
+    },
+    {
+      "type": "General",
+      "islamic_date": "17 Safar",
+      "georgian_date": "Saturday, August 1",
+      "time": "TBA",
+      "event": "Shahadat Imam Ali Reza (AS)",
+      "maulana": "Syed Irtiza Abbas Naqvi",
+      "sponsors": "",
+      "address": "7900 Backlick Rd, Springfield, VA 22150"
+    },
+    {
+      "type": "General",
+      "islamic_date": "18 Safar",
+      "georgian_date": "Sunday, August 2",
+      "time": "TBA",
+      "event": "Majlis",
+      "maulana": "Syed Irtiza Abbas Naqvi",
+      "sponsors": "",
+      "address": "7900 Backlick Rd, Springfield, VA 22150"
+    },
+    {
+      "type": "General",
       "islamic_date": "19 Safar",
       "georgian_date": "Monday, August 3",
-      "time": "18:00",
+      "time": "6:00 PM",
       "event": "Shab e Chelum Imam Hussain (AS)",
-      "maulana": "",
+      "maulana": "Syed Irtiza Abbas Naqvi",
+      "sponsors": "",
+      "address": "7900 Backlick Rd, Springfield, VA 22150"
+    },
+    {
+      "type": "Ladies",
+      "islamic_date": "20 Safar",
+      "georgian_date": "Tuesday, August 4",
+      "time": "TBA",
+      "event": "Ladies Majlis - Chelum Imam Hussain (AS)",
+      "maulana": "Sister Zakira Shahnaz Ali",
+      "sponsors": "",
+      "address": "7900 Backlick Rd, Springfield, VA 22150"
+    },
+    {
+      "type": "General",
+      "islamic_date": "20 Safar",
+      "georgian_date": "Tuesday, August 4",
+      "time": "TBA",
+      "event": "Chelum Imam Hussain (AS) - Taboot & Juloos",
+      "maulana": "Syed Irtiza Abbas Naqvi",
       "sponsors": "",
       "address": "7900 Backlick Rd, Springfield, VA 22150"
     },
@@ -364,40 +504,120 @@
       "type": "Ladies",
       "islamic_date": "24 Safar",
       "georgian_date": "Saturday, August 8",
-      "time": "15:00",
+      "time": "3:00 PM",
       "event": "Ladies Majlis - Taboot Bibi Zainab (AS)",
       "maulana": "Sister Zakira Samana Naqvi",
       "sponsors": "Sister Sadaf Naqvi",
       "address": "7900 Backlick Rd, Springfield, VA 22150"
     },
     {
-      "type": "Men",
+      "type": "General",
+      "islamic_date": "24 Safar",
+      "georgian_date": "Saturday, August 8",
+      "time": "6:00 PM",
+      "event": "Majlis",
+      "maulana": "Sister Zakira Samana Naqvi",
+      "sponsors": "",
+      "address": "7900 Backlick Rd, Springfield, VA 22150"
+    },
+    {
+      "type": "General",
       "islamic_date": "25 Safar",
       "georgian_date": "Sunday, August 9",
       "time": "TBA",
       "event": "DC Chelum Juloos",
-      "maulana": "",
+      "maulana": "Imran Abbas Mazaheri",
       "sponsors": "Community",
       "address": "7900 Backlick Rd, Springfield, VA 22150"
     },
     {
-      "type": "Men",
+      "type": "General",
+      "islamic_date": "25 Safar",
+      "georgian_date": "Sunday, August 9",
+      "time": "TBA",
+      "event": "Majlis",
+      "maulana": "Imran Abbas Mazaheri",
+      "sponsors": "",
+      "address": "7900 Backlick Rd, Springfield, VA 22150"
+    },
+    {
+      "type": "General",
+      "islamic_date": "26 Safar",
+      "georgian_date": "Monday, August 10",
+      "time": "TBA",
+      "event": "Majlis",
+      "maulana": "Imran Abbas Mazaheri",
+      "sponsors": "",
+      "address": "7900 Backlick Rd, Springfield, VA 22150"
+    },
+    {
+      "type": "General",
       "islamic_date": "27 Safar",
       "georgian_date": "Tuesday, August 11",
       "time": "TBA",
       "event": "Shab e Shahadat Prophet Mohammad (PBUH) & Imam Hasan (AS)",
-      "maulana": "",
+      "maulana": "Imran Abbas Mazaheri",
       "sponsors": "Br. Syed Akbar Ali Family",
       "address": "7900 Backlick Rd, Springfield, VA 22150"
     },
     {
-      "type": "Men",
+      "type": "General",
       "islamic_date": "28 Safar",
       "georgian_date": "Wednesday, August 12",
       "time": "TBA",
       "event": "Shahadat Prophet Mohammad (PBUH) & Imam Hasan (AS)",
-      "maulana": "",
+      "maulana": "Imran Abbas Mazaheri",
       "sponsors": "Br. Syed Waqar Raza Family",
+      "address": "7900 Backlick Rd, Springfield, VA 22150"
+    },
+    {
+      "type": "General",
+      "islamic_date": "5 Rabi Ul Awwal",
+      "georgian_date": "Tuesday, August 18",
+      "time": "TBA",
+      "event": "Majlis",
+      "maulana": "",
+      "sponsors": "",
+      "address": "7900 Backlick Rd, Springfield, VA 22150"
+    },
+    {
+      "type": "General",
+      "islamic_date": "6 Rabi Ul Awwal",
+      "georgian_date": "Wednesday, August 19",
+      "time": "TBA",
+      "event": "Majlis",
+      "maulana": "",
+      "sponsors": "",
+      "address": "7900 Backlick Rd, Springfield, VA 22150"
+    },
+    {
+      "type": "General",
+      "islamic_date": "7 Rabi Ul Awwal",
+      "georgian_date": "Thursday, August 20",
+      "time": "TBA",
+      "event": "Shab e Shahadat Imam Hasan Askari (AS) - Taboot",
+      "maulana": "",
+      "sponsors": "Br. Dr. Miftah Zaidi Family",
+      "address": "7900 Backlick Rd, Springfield, VA 22150"
+    },
+    {
+      "type": "General",
+      "islamic_date": "8 Rabi Ul Awwal",
+      "georgian_date": "Friday, August 21",
+      "time": "TBA",
+      "event": "Shahadat Imam Hasan Askari (AS) - Alwidai Pursa",
+      "maulana": "",
+      "sponsors": "",
+      "address": "7900 Backlick Rd, Springfield, VA 22150"
+    },
+    {
+      "type": "General",
+      "islamic_date": "9 Rabi Ul Awwal",
+      "georgian_date": "Saturday, August 22",
+      "time": "TBA",
+      "event": "Eid e Zahra (AS)",
+      "maulana": "",
+      "sponsors": "",
       "address": "7900 Backlick Rd, Springfield, VA 22150"
     }
   ]
