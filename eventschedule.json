@@ -2,6 +2,15 @@
   "schedule": [
     {
       "type": "Men",
+      "islamic_date": "29 Zil Hijjah",
+      "georgian_date": "Monday, June 15",
+      "time": "21:00",
+      "event": "Chand Raat & Alum Kushai",
+      "maulana": "Syed Rehan Haider",
+      "sponsors": "Br. Jawwad Shirazi Family"
+    },
+    {
+      "type": "Men",
       "islamic_date": "30 Zil Hijjah",
       "georgian_date": "Monday, June 15",
       "time": "21:30",
