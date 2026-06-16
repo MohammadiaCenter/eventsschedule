@@ -281,7 +281,7 @@
       "address": "12029 Tango Lane, Woodbridge VA 22193"
     },
     {
-      "type": "General",
+      "type": "Men",
       "islamic_date": "20 Muharram",
       "georgian_date": "Sunday, July 5",
       "time": "TBA",
@@ -291,7 +291,7 @@
       "address": "7900 Backlick Rd, Springfield, VA 22150"
     },
     {
-      "type": "General",
+      "type": "Men",
       "islamic_date": "21 Muharram",
       "georgian_date": "Monday, July 6",
       "time": "TBA",
@@ -301,7 +301,7 @@
       "address": "7900 Backlick Rd, Springfield, VA 22150"
     },
     {
-      "type": "General",
+      "type": "Men",
       "islamic_date": "22 Muharram",
       "georgian_date": "Tuesday, July 7",
       "time": "TBA",
@@ -311,7 +311,7 @@
       "address": "7900 Backlick Rd, Springfield, VA 22150"
     },
     {
-      "type": "General",
+      "type": "Men",
       "islamic_date": "23 Muharram",
       "georgian_date": "Wednesday, July 8",
       "time": "TBA",
@@ -321,7 +321,7 @@
       "address": "7900 Backlick Rd, Springfield, VA 22150"
     },
     {
-      "type": "General",
+      "type": "Men",
       "islamic_date": "24 Muharram",
       "georgian_date": "Thursday, July 9",
       "time": "TBA",
@@ -331,7 +331,7 @@
       "address": "7900 Backlick Rd, Springfield, VA 22150"
     },
     {
-      "type": "General",
+      "type": "Men",
       "islamic_date": "30 Muharram",
       "georgian_date": "Wednesday, July 15",
       "time": "TBA",
@@ -341,7 +341,7 @@
       "address": "7900 Backlick Rd, Springfield, VA 22150"
     },
     {
-      "type": "General",
+      "type": "Men",
       "islamic_date": "1 Safar",
       "georgian_date": "Thursday, July 16",
       "time": "TBA",
@@ -351,7 +351,7 @@
       "address": "7900 Backlick Rd, Springfield, VA 22150"
     },
     {
-      "type": "General",
+      "type": "Men",
       "islamic_date": "2 Safar",
       "georgian_date": "Friday, July 17",
       "time": "TBA",
@@ -361,7 +361,7 @@
       "address": "7900 Backlick Rd, Springfield, VA 22150"
     },
     {
-      "type": "General",
+      "type": "Men",
       "islamic_date": "3 Safar",
       "georgian_date": "Saturday, July 18",
       "time": "TBA",
@@ -381,7 +381,7 @@
       "address": "7900 Backlick Rd, Springfield, VA 22150"
     },
     {
-      "type": "General",
+      "type": "Men",
       "islamic_date": "4 Safar",
       "georgian_date": "Sunday, July 19",
       "time": "TBA",
@@ -401,7 +401,7 @@
       "address": "7900 Backlick Rd, Springfield, VA 22150"
     },
     {
-      "type": "General",
+      "type": "Men",
       "islamic_date": "12 Safar",
       "georgian_date": "Monday, July 27",
       "time": "TBA",
@@ -411,7 +411,7 @@
       "address": "7900 Backlick Rd, Springfield, VA 22150"
     },
     {
-      "type": "General",
+      "type": "Men",
       "islamic_date": "13 Safar",
       "georgian_date": "Tuesday, July 28",
       "time": "TBA",
@@ -421,7 +421,7 @@
       "address": "7900 Backlick Rd, Springfield, VA 22150"
     },
     {
-      "type": "General",
+      "type": "Men",
       "islamic_date": "14 Safar",
       "georgian_date": "Wednesday, July 29",
       "time": "TBA",
@@ -431,7 +431,7 @@
       "address": "7900 Backlick Rd, Springfield, VA 22150"
     },
     {
-      "type": "General",
+      "type": "Men",
       "islamic_date": "15 Safar",
       "georgian_date": "Thursday, July 30",
       "time": "TBA",
@@ -441,7 +441,7 @@
       "address": "7900 Backlick Rd, Springfield, VA 22150"
     },
     {
-      "type": "General",
+      "type": "Men",
       "islamic_date": "16 Safar",
       "georgian_date": "Friday, July 31",
       "time": "TBA",
@@ -451,7 +451,7 @@
       "address": "7900 Backlick Rd, Springfield, VA 22150"
     },
     {
-      "type": "General",
+      "type": "Men",
       "islamic_date": "17 Safar",
       "georgian_date": "Saturday, August 1",
       "time": "TBA",
@@ -461,7 +461,7 @@
       "address": "7900 Backlick Rd, Springfield, VA 22150"
     },
     {
-      "type": "General",
+      "type": "Men",
       "islamic_date": "18 Safar",
       "georgian_date": "Sunday, August 2",
       "time": "TBA",
@@ -471,7 +471,7 @@
       "address": "7900 Backlick Rd, Springfield, VA 22150"
     },
     {
-      "type": "General",
+      "type": "Men",
       "islamic_date": "19 Safar",
       "georgian_date": "Monday, August 3",
       "time": "6:00 PM",
@@ -491,7 +491,7 @@
       "address": "7900 Backlick Rd, Springfield, VA 22150"
     },
     {
-      "type": "General",
+      "type": "Men",
       "islamic_date": "20 Safar",
       "georgian_date": "Tuesday, August 4",
       "time": "TBA",
@@ -511,7 +511,7 @@
       "address": "7900 Backlick Rd, Springfield, VA 22150"
     },
     {
-      "type": "General",
+      "type": "Men",
       "islamic_date": "24 Safar",
       "georgian_date": "Saturday, August 8",
       "time": "6:00 PM",
@@ -521,7 +521,7 @@
       "address": "7900 Backlick Rd, Springfield, VA 22150"
     },
     {
-      "type": "General",
+      "type": "Men",
       "islamic_date": "25 Safar",
       "georgian_date": "Sunday, August 9",
       "time": "TBA",
@@ -531,7 +531,7 @@
       "address": "7900 Backlick Rd, Springfield, VA 22150"
     },
     {
-      "type": "General",
+      "type": "Men",
       "islamic_date": "25 Safar",
       "georgian_date": "Sunday, August 9",
       "time": "TBA",
@@ -541,7 +541,7 @@
       "address": "7900 Backlick Rd, Springfield, VA 22150"
     },
     {
-      "type": "General",
+      "type": "Men",
       "islamic_date": "26 Safar",
       "georgian_date": "Monday, August 10",
       "time": "TBA",
@@ -551,7 +551,7 @@
       "address": "7900 Backlick Rd, Springfield, VA 22150"
     },
     {
-      "type": "General",
+      "type": "Men",
       "islamic_date": "27 Safar",
       "georgian_date": "Tuesday, August 11",
       "time": "TBA",
@@ -561,7 +561,7 @@
       "address": "7900 Backlick Rd, Springfield, VA 22150"
     },
     {
-      "type": "General",
+      "type": "Men",
       "islamic_date": "28 Safar",
       "georgian_date": "Wednesday, August 12",
       "time": "TBA",
@@ -571,7 +571,7 @@
       "address": "7900 Backlick Rd, Springfield, VA 22150"
     },
     {
-      "type": "General",
+      "type": "Men",
       "islamic_date": "5 Rabi Ul Awwal",
       "georgian_date": "Tuesday, August 18",
       "time": "TBA",
@@ -581,7 +581,7 @@
       "address": "7900 Backlick Rd, Springfield, VA 22150"
     },
     {
-      "type": "General",
+      "type": "Men",
       "islamic_date": "6 Rabi Ul Awwal",
       "georgian_date": "Wednesday, August 19",
       "time": "TBA",
@@ -591,7 +591,7 @@
       "address": "7900 Backlick Rd, Springfield, VA 22150"
     },
     {
-      "type": "General",
+      "type": "Men",
       "islamic_date": "7 Rabi Ul Awwal",
       "georgian_date": "Thursday, August 20",
       "time": "TBA",
@@ -601,7 +601,7 @@
       "address": "7900 Backlick Rd, Springfield, VA 22150"
     },
     {
-      "type": "General",
+      "type": "Men",
       "islamic_date": "8 Rabi Ul Awwal",
       "georgian_date": "Friday, August 21",
       "time": "TBA",
@@ -611,7 +611,7 @@
       "address": "7900 Backlick Rd, Springfield, VA 22150"
     },
     {
-      "type": "General",
+      "type": "Men",
       "islamic_date": "9 Rabi Ul Awwal",
       "georgian_date": "Saturday, August 22",
       "time": "TBA",
