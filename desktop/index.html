@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mohammadia Center - Schedule Manager</title>
+    <link href="https://unpkg.com/tabulator-tables@5.5.2/dist/css/tabulator_midnight.min.css" rel="stylesheet">
+    <script type="text/javascript" src="https://unpkg.com/tabulator-tables@5.5.2/dist/js/tabulator.min.js"></script>
+    
+    <style>
+        :root {
+            --bg-color: #0d0e15;
+            --accent-color: #6366f1;
+            --accent-hover: #4f46e5;
+            --panel-bg: #1a1c28;
+            --text-color: #f3f4f6;
+            --danger-color: #ef4444;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 24px;
+        }
+
+        /* 1. Increased maximum container width to give the table more horizontal workspace */
+        .container {
+            width: 95%;
+            max-width: 1800px;
+            margin: 0 auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            border-bottom: 1px solid #23263a;
+            padding-bottom: 16px;
+        }
+
+        h1 {
+            font-weight: 600;
+            font-size: 1.6rem;
+            margin: 0;
+            color: #fff;
+        }
+
+        .config-panel {
+            background-color: var(--panel-bg);
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            align-items: center;
+            border: 1px solid #23263a;
+        }
+
+        .config-panel input {
+            background: #0d0e15;
+            border: 1px solid #374151;
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            width: 300px;
+            outline: none;
+        }
+        
+        .config-panel input:focus {
+            border-color: var(--accent-color);
+        }
+
+        .toolbar {
+            display: flex;
+            gap: 12px;
+        }
+
+        button {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+
+        button:hover {
+            background-color: var(--accent-hover);
+        }
+
+        button.btn-danger {
+            background-color: transparent;
+            border: 1px solid var(--danger-color);
+            color: var(--danger-color);
+        }
+
+        button.btn-danger:hover {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        button.btn-success {
+            background-color: var(--success-color);
+        }
+        button.btn-success:hover {
+            background-color: #059669;
+        }
+
+        /* Recovery Banner Alert */
+        .recovery-banner {
+            background-color: #2e2213;
+            border: 1px solid var(--warning-color);
+            color: #fef3c7;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .recovery-banner button {
+            background-color: var(--warning-color);
+            color: #000;
+        }
+        .recovery-banner button:hover {
+            background-color: #d97706;
+        }
+
+        .tabulator {
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #23263a !important;
+            background: var(--panel-bg) !important;
+            width: 100%; /* 2. Force the table element to take the full width of the container */
+        }
+
+        .status-message {
+            margin-left: auto;
+            font-size: 0.9rem;
+            color: #9ca3af;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="config-panel">
+        <label for="gh-token">GitHub Personal Access Token:</label>
+        <input type="password" id="gh-token" placeholder="Paste your GitHub PAT here..." />
+        <button id="load-btn">Sync from GitHub</button>
+        <span id="status" class="status-message">Enter token to securely download schedule data.</span>
+    </div>
+
+    <div id="recovery-banner" class="recovery-banner">
+        <span>⚠️ Found unsaved local updates from your last session that weren't pushed to GitHub!</span>
+        <div>
+            <button id="restore-btn">Restore Unsaved Work</button>
+            <button id="discard-btn" class="btn-danger" style="margin-left: 8px;">Discard</button>
+        </div>
+    </div>
+
+    <header>
+        <h1>Events Schedule Data Grid</h1>
+        <div class="toolbar">
+            <button id="add-row-btn">+ Add Row</button>
+            <button id="delete-row-btn" class="btn-danger">Delete Selected Row(s)</button>
+            <button id="save-btn" class="btn-success">Save & Push to GitHub</button>
+        </div>
+    </header>
+
+    <div id="events-table"></div>
+</div>
+
+<script>
+    const OWNER = 'MohammadiaCenter';
+    const REPO = 'eventsschedule';
+    const FILE_PATH = 'eventschedule.json';
+    const BRANCH = 'main';
+    
+    let table;
+    let currentFileSha = ""; 
+
+    const tableColumns = [
+        {formatter:"rowSelection", titleFormatter:"rowSelection", hozAlign:"center", headerSort:false, width:45, frozen:true},
+        {title:"Type", field:"type", editor:"list", editorParams:{values:["Men", "Ladies", "General"]}, width:100},
+        {title:"Islamic Date", field:"islamic_date", editor:"input", width:140},
+        {title:"Georgian Date", field:"georgian_date", editor:"input", width:160},
+        {title:"Time", field:"time", editor:"input", width:100},
+        {title:"Event Name / Title", field:"event", editor:"input", width:320},
+        {title:"Maulana / Speaker", field:"maulana", editor:"input", width:180},
+        {title:"Sponsors", field:"sponsors", editor:"input", width:220},
+        {title:"Address", field:"address", editor:"input", width:300}
+    ];
+
+    // Reverted back to fitColumns layout mode inside our freshly expanded dashboard frame
+    table = new Tabulator("#events-table", {
+        columns: tableColumns,
+        layout: "fitColumns", 
+        history: true,
+        movableRows: true, 
+        placeholder: "No active record items running. Click 'Sync from GitHub' above.",
+        dataChanged: function(data) {
+            saveDraftToLocalStorage(data);
+        }
+    });
+
+    window.addEventListener('DOMContentLoaded', () => {
+        const savedToken = localStorage.getItem('gh_token_cache');
+        const savedSha = localStorage.getItem('gh_sha_cache');
+        
+        if (savedToken) {
+            document.getElementById('gh-token').value = savedToken;
+            document.getElementById('status').innerText = "Cached token located. Click 'Sync from GitHub' to fetch data.";
+        }
+        
+        if (savedSha) {
+            currentFileSha = savedSha;
+        }
+
+        if (localStorage.getItem('schedule_draft_cache')) {
+            document.getElementById('recovery-banner').style.display = 'flex';
+        }
+    });
+
+    function saveDraftToLocalStorage(data) {
+        if(data && data.length > 0) {
+            localStorage.setItem('schedule_draft_cache', JSON.stringify(data));
+        }
+    }
+
+    function clearLocalDraftCache() {
+        localStorage.removeItem('schedule_draft_cache');
+        document.getElementById('recovery-banner').style.display = 'none';
+    }
+
+    async function loadData() {
+        const token = document.getElementById('gh-token').value.trim();
+        const statusSpan = document.getElementById('status');
+        
+        if(!token) {
+            alert("Authentication Error: GitHub Personal Access Token is required.");
+            return;
+        }
+
+        localStorage.setItem('gh_token_cache', token);
+        statusSpan.innerText = "Connecting and parsing schema upstream...";
+        statusSpan.style.color = "#9ca3af";
+
+        try {
+            const url = `https://api.github.com/repos/${OWNER}/${REPO}/contents/${FILE_PATH}?ref=${BRANCH}`;
+            const response = await fetch(url, {
+                headers: { 'Authorization': `token ${token}` }
+            });
+
+            if (!response.ok) throw new Error(`Fetch Exception: ${response.status} ${response.statusText}`);
+
+            const fileData = await response.json();
+            currentFileSha = fileData.sha; 
+            localStorage.setItem('gh_sha_cache', currentFileSha);
+
+            const rawContent = decodeURIComponent(escape(atob(fileData.content)));
+            const parsedJson = JSON.parse(rawContent);
+            const scheduleArray = parsedJson.schedule || [];
+
+            table.setData(scheduleArray);
+            clearLocalDraftCache();
+
+            statusSpan.innerText = `Successfully loaded ${scheduleArray.length} items. Ready to edit.`;
+            statusSpan.style.color = "#10b981";
+        } catch (error) {
+            console.error(error);
+            statusSpan.innerText = "Error tracking file data. Ensure token is valid and has repo permissions.";
+            statusSpan.style.color = "#ef4444";
+        }
+    }
+
+    async function saveData() {
+        const token = document.getElementById('gh-token').value.trim();
+        const statusSpan = document.getElementById('status');
+
+        if(!token || !currentFileSha) {
+            alert("Action Prevented: Connect to GitHub with a valid session before pushing updates.");
+            return;
+        }
+
+        statusSpan.innerText = "Preparing payload & submitting commit metadata...";
+        statusSpan.style.color = "#9ca3af";
+
+        const currentRowsData = table.getData();
+        const updatedPayload = {
+            schedule: currentRowsData
+        };
+        
+        const jsonOutputString = JSON.stringify(updatedPayload, null, 2);
+
+        try {
+            const url = `https://api.github.com/repos/${OWNER}/${REPO}/contents/${FILE_PATH}`;
+            const response = await fetch(url, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `token ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    message: "Content Update: Schedule entries updated via data grid dashboard panel",
+                    content: btoa(unescape(encodeURIComponent(jsonOutputString))), 
+                    sha: currentFileSha,
+                    branch: BRANCH
+                })
+            });
+
+            if (!response.ok) throw new Error(`Push Error: ${response.statusText}`);
+            
+            const executionConfirmation = await response.json();
+            currentFileSha = executionConfirmation.content.sha; 
+            localStorage.setItem('gh_sha_cache', currentFileSha);
+            
+            clearLocalDraftCache();
+
+            statusSpan.innerText = "Changes compiled & deployed seamlessly onto GitHub main!";
+            statusSpan.style.color = "#10b981";
+            alert("Success! Your GitHub file has been rewritten with the new data.");
+        } catch (error) {
+            console.error(error);
+            statusSpan.innerText = "Push mutation failed. Verify repository commit rights configuration rules.";
+            statusSpan.style.color = "#ef4444";
+        }
+    }
+
+    document.getElementById('restore-btn').addEventListener('click', () => {
+        const cachedRawDraft = localStorage.getItem('schedule_draft_cache');
+        if(cachedRawDraft) {
+            table.setData(JSON.parse(cachedRawDraft));
+            document.getElementById('recovery-banner').style.display = 'none';
+            document.getElementById('status').innerText = "Restored modified unsaved changes from local cache.";
+            document.getElementById('status').style.color = "#f59e0b";
+        }
+    });
+
+    document.getElementById('discard-btn').addEventListener('click', () => {
+        if(confirm("Are you sure you want to permanently delete your unsaved changes?")) {
+            clearLocalDraftCache();
+        }
+    });
+
+    document.getElementById('load-btn').addEventListener('click', loadData);
+    document.getElementById('save-btn').addEventListener('click', saveData);
+    
+    document.getElementById('add-row-btn').addEventListener('click', () => {
+        table.addRow({
+            type: "Men",
+            islamic_date: "",
+            georgian_date: "",
+            time: "TBA",
+            event: "",
+            maulana: "",
+            sponsors: "",
+            address: "7900 Backlick Rd, Springfield, VA 22150"
+        }, false);
+    });
+
+    document.getElementById('delete-row-btn').addEventListener('click', () => {
+        const rowsSelectedForPurge = table.getSelectedRows();
+        if(rowsSelectedForPurge.length === 0) {
+            alert("Select at least one row using the leftmost checkboxes to remove items.");
+            return;
+        }
+        if(confirm(`Are you sure you want to remove ${rowsSelectedForPurge.length} entry/entries? Remember to click 'Save & Push' to sync with GitHub.`)) {
+            rowsSelectedForPurge.forEach(rowItem => rowItem.delete());
+        }
+    });
+</script>
+</body>
+</html>
