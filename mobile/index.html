@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mohammadia Center - Schedule Manager</title>
+    <style>
+        :root {
+            --bg-color: #0d0e15;
+            --accent-color: #6366f1;
+            --accent-hover: #4f46e5;
+            --panel-bg: #1a1c28;
+            --card-bg: #222538;
+            --text-color: #f3f4f6;
+            --text-muted: #9ca3af;
+            --danger-color: #ef4444;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --input-border: #374151;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 16px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        header {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 16px;
+            border-bottom: 1px solid #23263a;
+            padding-bottom: 16px;
+        }
+
+        h1 {
+            font-weight: 600;
+            font-size: 1.4rem;
+            margin: 0;
+            color: #fff;
+            text-align: center;
+        }
+
+        .config-panel {
+            background-color: var(--panel-bg);
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            border: 1px solid #23263a;
+        }
+
+        .config-panel label {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        .config-panel input {
+            background: #0d0e15;
+            border: 1px solid var(--input-border);
+            color: #fff;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            width: 100%;
+            outline: none;
+        }
+        
+        .config-panel input:focus {
+            border-color: var(--accent-color);
+        }
+
+        .toolbar {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .toolbar #save-btn {
+            grid-column: span 2;
+            font-weight: 600;
+        }
+
+        /* Filter Control Deck Panel Styles */
+        .filter-panel {
+            background-color: var(--panel-bg);
+            border: 1px solid #23263a;
+            border-radius: 12px;
+            padding: 14px;
+            margin-bottom: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .filter-title {
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 2px;
+        }
+
+        .filter-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 8px;
+        }
+
+        @media (min-width: 480px) {
+            .filter-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .filter-select {
+            background: var(--card-bg);
+            border: 1px solid var(--input-border);
+            color: #fff;
+            padding: 8px 10px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            outline: none;
+            width: 100%;
+        }
+
+        .filter-select:focus {
+            border-color: var(--accent-color);
+        }
+
+        /* Checkbox filter customization toggles */
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            user-select: none;
+            font-size: 0.9rem;
+            color: var(--text-color);
+            margin-top: 4px;
+            padding: 4px 0;
+        }
+
+        .checkbox-container input {
+            cursor: pointer;
+            width: 18px;
+            height: 18px;
+            accent-color: var(--accent-color);
+        }
+
+        button {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+        }
+
+        button:hover {
+            background-color: var(--accent-hover);
+        }
+
+        button.btn-danger {
+            background-color: transparent;
+            border: 1px solid var(--danger-color);
+            color: var(--danger-color);
+        }
+
+        button.btn-danger:hover {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        button.btn-success {
+            background-color: var(--success-color);
+        }
+        button.btn-success:hover {
+            background-color: #059669;
+        }
+
+        .recovery-banner {
+            background-color: #2e2213;
+            border: 1px solid var(--warning-color);
+            color: #fef3c7;
+            padding: 14px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            display: none;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .recovery-banner .banner-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .recovery-banner button {
+            flex: 1;
+            padding: 8px;
+            font-size: 0.85rem;
+        }
+
+        .recovery-banner #restore-btn {
+            background-color: var(--warning-color);
+            color: #000;
+        }
+
+        .status-message {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            text-align: center;
+            word-break: break-word;
+        }
+
+        #cards-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        /* Compact Card Styles */
+        .event-card {
+            background-color: var(--panel-bg);
+            border: 1px solid #23263a;
+            border-radius: 12px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            position: relative;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-top-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2px;
+        }
+
+        .badge-container {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .type-badge {
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 4px;
+            text-transform: uppercase;
+        }
+
+        .type-badge.men { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
+        .type-badge.ladies { background: rgba(236, 72, 153, 0.2); color: #f472b6; }
+
+        .card-actions button {
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            border-radius: 6px;
+        }
+
+        .card-main-title {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: #fff;
+            margin: 2px 0;
+            line-height: 1.3;
+        }
+
+        .card-meta-line {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .meta-separator {
+            color: #374151;
+        }
+
+        .card-speaker, .card-sponsors {
+            font-size: 0.85rem;
+            color: #cbd5e1;
+            margin-top: 2px;
+        }
+
+        .card-sponsors {
+            color: #93c5fd; 
+        }
+
+        /* Modal Overlay Styles */
+        .modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(5, 6, 10, 0.85);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 16px;
+        }
+
+        .modal-content {
+            background-color: var(--panel-bg);
+            border: 1px solid #2d3149;
+            width: 100%;
+            max-width: 500px;
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            max-height: 90vh;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            animation: modalSlideUp 0.25s ease-out;
+        }
+
+        @keyframes modalSlideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-header {
+            padding: 16px;
+            border-bottom: 1px solid #2d3149;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            font-size: 1.2rem;
+            margin: 0;
+            color: #fff;
+        }
+
+        .modal-body {
+            padding: 16px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .modal-footer {
+            padding: 16px;
+            border-top: 1px solid #2d3149;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .form-group label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .form-group input, .form-group select {
+            background: var(--card-bg);
+            border: 1px solid var(--input-border);
+            color: #fff;
+            padding: 10px 12px;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            outline: none;
+            width: 100%;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            border-color: var(--accent-color);
+        }
+
+        .empty-placeholder {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-muted);
+            border: 2px dashed #23263a;
+            border-radius: 12px;
+            font-size: 0.95rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="config-panel">
+        <label for="gh-token">GitHub Personal Access Token:</label>
+        <input type="password" id="gh-token" placeholder="Paste your GitHub PAT here..." />
+        <button id="load-btn">Sync from GitHub</button>
+        <div id="status" class="status-message">Enter token to securely download schedule data.</div>
+    </div>
+
+    <div id="recovery-banner" class="recovery-banner">
+        <span>⚠️ Found unsaved local updates from your last session that weren't pushed to GitHub!</span>
+        <div class="banner-actions">
+            <button id="restore-btn">Restore Work</button>
+            <button id="discard-btn" class="btn-danger">Discard</button>
+        </div>
+    </div>
+
+    <header>
+        <h1>Events Schedule Manager</h1>
+        <div class="toolbar">
+            <button id="add-row-btn" class="btn-success">+ Add New Event</button>
+            <button id="save-btn" class="btn-success">Save & Push to GitHub</button>
+        </div>
+    </header>
+
+    <!-- Multi-tier Filter Dropdown Control Deck Panel -->
+    <div class="filter-panel">
+        <div class="filter-title">Filter Events By:</div>
+        <div class="filter-grid">
+            <select id="filter-type" class="filter-select">
+                <option value="ALL">All Types</option>
+                <option value="Men">Men</option>
+                <option value="Ladies">Ladies</option>
+            </select>
+
+            <select id="filter-islamic" class="filter-select">
+                <option value="ALL">All Islamic Dates</option>
+            </select>
+
+            <select id="filter-georgian" class="filter-select">
+                <option value="ALL">All Gregorian Dates</option>
+            </select>
+        </div>
+        
+        <label class="checkbox-container">
+            <input type="checkbox" id="filter-open-sponsors">
+            <span>Show only "Open" / Blank Sponsors</span>
+        </label>
+    </div>
+
+    <!-- Main Stack Content Window -->
+    <div id="cards-container">
+        <div class="empty-placeholder">No active records loaded. Click 'Sync from GitHub' above.</div>
+    </div>
+</div>
+
+<!-- Dedicated Modal Window Editor Component Frame -->
+<div id="edit-modal" class="modal-backdrop">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 id="modal-title">Edit Event Record</h2>
+            <button id="modal-close-x" style="background:transparent; padding:4px; font-size:1.2rem; color:var(--text-muted)">✕</button>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="edit-index" />
+            
+            <div class="form-group">
+                <label>Target Group / Type</label>
+                <select id="edit-type">
+                    <option value="">None / Unassigned</option>
+                    <option value="Men">Men</option>
+                    <option value="Ladies">Ladies</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Islamic Date</label>
+                <input type="text" id="edit-islamic-date" placeholder="e.g. 10 Muharram" />
+            </div>
+
+            <div class="form-group">
+                <label>Georgian Date</label>
+                <input type="text" id="edit-georgian-date" placeholder="e.g. July 25, 2026" />
+            </div>
+
+            <div class="form-group">
+                <label>Time</label>
+                <input type="text" id="edit-time" placeholder="e.g. 7:30 PM" />
+            </div>
+
+            <div class="form-group">
+                <label>Event Name / Title</label>
+                <input type="text" id="edit-event" placeholder="Event topic summary..." />
+            </div>
+
+            <div class="form-group">
+                <label>Maulana / Speaker</label>
+                <input type="text" id="edit-maulana" placeholder="Speaker name..." />
+            </div>
+
+            <div class="form-group">
+                <label>Sponsors</label>
+                <input type="text" id="edit-sponsors" placeholder="Leave blank or write 'Open' if looking for hosts..." />
+            </div>
+
+            <div class="form-group">
+                <label>Location Address</label>
+                <input type="text" id="edit-address" placeholder="Venue address..." />
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button id="modal-delete-btn" class="btn-danger">Delete Event</button>
+            <button id="modal-save-btn" class="btn-success">Update Details</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const OWNER = 'MohammadiaCenter';
+    const REPO = 'eventsschedule';
+    const FILE_PATH = 'eventschedule.json';
+    const BRANCH = 'main';
+    
+    let localScheduleData = []; 
+    let currentFileSha = ""; 
+
+    window.addEventListener('DOMContentLoaded', () => {
+        const savedToken = localStorage.getItem('gh_token_cache');
+        const savedSha = localStorage.getItem('gh_sha_cache');
+        
+        if (savedToken) {
+            document.getElementById('gh-token').value = savedToken;
+            document.getElementById('status').innerText = "Cached token located. Click 'Sync from GitHub' to fetch data.";
+        }
+        
+        if (savedSha) {
+            currentFileSha = savedSha;
+        }
+
+        if (localStorage.getItem('schedule_draft_cache')) {
+            document.getElementById('recovery-banner').style.display = 'flex';
+        }
+
+        // Attach state change listeners to the filter controls
+        document.getElementById('filter-type').addEventListener('change', renderCards);
+        document.getElementById('filter-islamic').addEventListener('change', renderCards);
+        document.getElementById('filter-georgian').addEventListener('change', renderCards);
+        document.getElementById('filter-open-sponsors').addEventListener('change', renderCards);
+    });
+
+    // Helper Utility: Scans dataset array parameters to dynamically build select option arrays
+    function updateFilterDropdownOptions() {
+        const islamicSelect = document.getElementById('filter-islamic');
+        const georgianSelect = document.getElementById('filter-georgian');
+
+        // Retain standard "ALL" values across updates
+        const currentSelectedIslamic = islamicSelect.value;
+        const currentSelectedGeorgian = georgianSelect.value;
+
+        // Extract unique, sorted lists of existing values (omitting blank properties)
+        const uniqueIslamicDates = [...new Set(localScheduleData.map(item => item.islamic_date?.trim()).filter(Boolean))].sort();
+        const uniqueGeorgianDates = [...new Set(localScheduleData.map(item => item.georgian_date?.trim()).filter(Boolean))].sort();
+
+        // Rewrite Islamic dates dropdown list options
+        islamicSelect.innerHTML = '<option value="ALL">All Islamic Dates</option>';
+        uniqueIslamicDates.forEach(date => {
+            islamicSelect.innerHTML += `<option value="${date}">${date}</option>`;
+        });
+
+        // Rewrite Georgian dates dropdown list options
+        georgianSelect.innerHTML = '<option value="ALL">All Gregorian Dates</option>';
+        uniqueGeorgianDates.forEach(date => {
+            georgianSelect.innerHTML += `<option value="${date}">${date}</option>`;
+        });
+
+        // Re-apply values if they still match current list entities
+        if (uniqueIslamicDates.includes(currentSelectedIslamic)) islamicSelect.value = currentSelectedIslamic;
+        if (uniqueGeorgianDates.includes(currentSelectedGeorgian)) georgianSelect.value = currentSelectedGeorgian;
+    }
+
+    // Main Engine View Renderer with Active Filters Enabled
+    function renderCards() {
+        const container = document.getElementById('cards-container');
+        container.innerHTML = '';
+
+        if (localScheduleData.length === 0) {
+            container.innerHTML = `<div class="empty-placeholder">No events scheduled. Click '+ Add New Event' to start.</div>`;
+            return;
+        }
+
+        // Capture current selected filtering parameters
+        const typeFilter = document.getElementById('filter-type').value;
+        const islamicFilter = document.getElementById('filter-islamic').value;
+        const georgianFilter = document.getElementById('filter-georgian').value;
+        const onlyOpenSponsors = document.getElementById('filter-open-sponsors').checked;
+
+        let visibleCardsCount = 0;
+
+        // Render directly in sequential array hierarchy
+        localScheduleData.forEach((item, index) => {
+            // Apply targeted multi-tier conditional check gates
+            if (typeFilter !== 'ALL' && item.type !== typeFilter) return;
+            if (islamicFilter !== 'ALL' && item.islamic_date?.trim() !== islamicFilter) return;
+            if (georgianFilter !== 'ALL' && item.georgian_date?.trim() !== georgianFilter) return;
+            
+            // Checkbox logic rule: Filter only blanks or matching string literal variations of 'Open'
+            if (onlyOpenSponsors) {
+                const sponsorString = (item.sponsors || '').trim().toLowerCase();
+                if (sponsorString !== "" && sponsorString !== "open") {
+                    return;
+                }
+            }
+
+            visibleCardsCount++;
+
+            const card = document.createElement('div');
+            card.className = 'event-card';
+            
+            const badgeClass = item.type ? item.type.toLowerCase() : '';
+            const typeBadgeHtml = item.type ? `<span class="type-badge ${badgeClass}">${item.type}</span>` : '';
+            
+            const speakerText = item.maulana ? `<div class="card-speaker">🎙️ ${item.maulana}</div>` : '';
+            const sponsorsText = item.sponsors ? `<div class="card-sponsors">🤝 Sponsors: ${item.sponsors}</div>` : '';
+            
+            card.innerHTML = `
+                <div class="card-top-row">
+                    <div class="badge-container">
+                        ${typeBadgeHtml}
+                    </div>
+                    <div class="card-actions">
+                        <button class="edit-card-btn" data-index="${index}">✏️ Edit</button>
+                    </div>
+                </div>
+
+                <div class="card-main-title">${item.event || 'Untitled Event Record'}</div>
+
+                <div class="card-meta-line">
+                    <span>📅 ${item.georgian_date || 'TBA'}</span>
+                    <span class="meta-separator">•</span>
+                    <span>🌙 ${item.islamic_date || 'N/A'}</span>
+                    <span class="meta-separator">•</span>
+                    <span>🕒 ${item.time || 'TBA'}</span>
+                </div>
+                ${speakerText}
+                ${sponsorsText}
+            `;
+            container.appendChild(card);
+        });
+
+        if (visibleCardsCount === 0) {
+            container.innerHTML = `<div class="empty-placeholder">No events match your current filter settings.</div>`;
+        }
+
+        // Event Trigger Handlers assignment
+        document.querySelectorAll('.edit-card-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const targetIdx = parseInt(e.target.getAttribute('data-index'));
+                openModalEditor(targetIdx);
+            });
+        });
+    }
+
+    // Modal Operations Controller Utilities
+    function openModalEditor(index) {
+        const item = localScheduleData[index];
+        document.getElementById('edit-index').value = index;
+        document.getElementById('edit-type').value = item.type || '';
+        document.getElementById('edit-islamic-date').value = item.islamic_date || '';
+        document.getElementById('edit-georgian-date').value = item.georgian_date || '';
+        document.getElementById('edit-time').value = item.time || '';
+        document.getElementById('edit-event').value = item.event || '';
+        document.getElementById('edit-maulana').value = item.maulana || '';
+        document.getElementById('edit-sponsors').value = item.sponsors || '';
+        document.getElementById('edit-address').value = item.address || '';
+        
+        document.getElementById('modal-title').innerText = `Modify Event #${index + 1}`;
+        document.getElementById('edit-modal').style.display = 'flex';
+    }
+
+    function closeModalEditor() {
+        document.getElementById('edit-modal').style.display = 'none';
+    }
+
+    // Save item changes from the Modal
+    document.getElementById('modal-save-btn').addEventListener('click', () => {
+        const idx = parseInt(document.getElementById('edit-index').value);
+        
+        localScheduleData[idx] = {
+            type: document.getElementById('edit-type').value,
+            islamic_date: document.getElementById('edit-islamic-date').value.trim(),
+            georgian_date: document.getElementById('edit-georgian-date').value.trim(),
+            time: document.getElementById('edit-time').value.trim(),
+            event: document.getElementById('edit-event').value.trim(),
+            maulana: document.getElementById('edit-maulana').value.trim(),
+            sponsors: document.getElementById('edit-sponsors').value.trim(),
+            address: document.getElementById('edit-address').value.trim()
+        };
+
+        saveDraftToLocalStorage();
+        updateFilterDropdownOptions();
+        renderCards();
+        closeModalEditor();
+    });
+
+    // Delete item configuration from within Modal
+    document.getElementById('modal-delete-btn').addEventListener('click', () => {
+        const idx = parseInt(document.getElementById('edit-index').value);
+        const title = localScheduleData[idx].event || `Event #${idx + 1}`;
+        
+        if (confirm(`Are you completely sure you want to delete "${title}"?`)) {
+            localScheduleData.splice(idx, 1);
+            saveDraftToLocalStorage();
+            updateFilterDropdownOptions();
+            renderCards();
+            closeModalEditor();
+        }
+    });
+
+    // Close on overlay backdrop tapping or 'X' element targets
+    document.getElementById('modal-close-x').addEventListener('click', closeModalEditor);
+    document.getElementById('edit-modal').addEventListener('click', (e) => {
+        if (e.target.id === 'edit-modal') closeModalEditor();
+    });
+
+    function saveDraftToLocalStorage() {
+        localStorage.setItem('schedule_draft_cache', JSON.stringify(localScheduleData));
+    }
+
+    function clearLocalDraftCache() {
+        localStorage.removeItem('schedule_draft_cache');
+        document.getElementById('recovery-banner').style.display = 'none';
+    }
+
+    // Pull Repository manifest array down from file ecosystem targets
+    async function loadData() {
+        const token = document.getElementById('gh-token').value.trim();
+        const statusSpan = document.getElementById('status');
+        
+        if(!token) {
+            alert("Authentication Error: GitHub Personal Access Token is required.");
+            return;
+        }
+
+        localStorage.setItem('gh_token_cache', token);
+        statusSpan.innerText = "Connecting and parsing schema upstream...";
+        statusSpan.style.color = "#9ca3af";
+
+        try {
+            const url = `https://api.github.com/repos/${OWNER}/${REPO}/contents/${FILE_PATH}?ref=${BRANCH}`;
+            const response = await fetch(url, {
+                headers: { 'Authorization': `token ${token}` }
+            });
+
+            if (!response.ok) throw new Error(`Fetch Exception: ${response.status} ${response.statusText}`);
+
+            const fileData = await response.json();
+            currentFileSha = fileData.sha; 
+            localStorage.setItem('gh_sha_cache', currentFileSha);
+
+            const rawContent = decodeURIComponent(escape(atob(fileData.content)));
+            const parsedJson = JSON.parse(rawContent);
+            localScheduleData = parsedJson.schedule || [];
+
+            updateFilterDropdownOptions();
+            renderCards();
+            clearLocalDraftCache();
+
+            statusSpan.innerText = `Successfully loaded ${localScheduleData.length} items. Ready to edit.`;
+            statusSpan.style.color = "#10b981";
+        } catch (error) {
+            console.error(error);
+            statusSpan.innerText = "Error tracking file data. Ensure token is valid and has repo permissions.";
+            statusSpan.style.color = "#ef4444";
+        }
+    }
+
+    // Submit and overwrite target payload array definitions cleanly back up to remote master
+    async function saveData() {
+        const token = document.getElementById('gh-token').value.trim();
+        const statusSpan = document.getElementById('status');
+
+        if(!token || !currentFileSha) {
+            alert("Action Prevented: Connect to GitHub with a valid session before pushing updates.");
+            return;
+        }
+
+        if(!confirm(`Are you ready to write these changes live?\n\nThis will push all current edits down directly to the repository file definitions on GitHub.`)) {
+            return;
+        }
+
+        statusSpan.innerText = "Preparing payload & submitting commit metadata...";
+        statusSpan.style.color = "#9ca3af";
+
+        const updatedPayload = {
+            schedule: localScheduleData
+        };
+        
+        const jsonOutputString = JSON.stringify(updatedPayload, null, 2);
+
+        try {
+            const url = `https://api.github.com/repos/${OWNER}/${REPO}/contents/${FILE_PATH}`;
+            const response = await fetch(url, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `token ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    message: "Mobile App Commit: Updated schedule cards configuration parameters",
+                    content: btoa(unescape(encodeURIComponent(jsonOutputString))), 
+                    sha: currentFileSha,
+                    branch: BRANCH
+                })
+            });
+
+            if (!response.ok) throw new Error(`Push Error: ${response.statusText}`);
+            
+            const executionConfirmation = await response.json();
+            currentFileSha = executionConfirmation.content.sha; 
+            localStorage.setItem('gh_sha_cache', currentFileSha);
+            
+            clearLocalDraftCache();
+
+            statusSpan.innerText = "Changes compiled & deployed seamlessly onto GitHub main!";
+            statusSpan.style.color = "#10b981";
+            alert("Success! Your GitHub file has been rewritten with the new data.");
+        } catch (error) {
+            console.error(error);
+            statusSpan.innerText = "Push mutation failed. Verify repository commit rights configuration rules.";
+            statusSpan.style.color = "#ef4444";
+        }
+    }
+
+    // Action Triggers Bindings
+    document.getElementById('add-row-btn').addEventListener('click', () => {
+        if (confirm("Create a new empty event card template?")) {
+            localScheduleData.unshift({ 
+                type: "",
+                islamic_date: "",
+                georgian_date: "",
+                time: "",
+                event: "New Event Title",
+                maulana: "",
+                sponsors: "",
+                address: "7900 Backlick Rd, Springfield, VA 22150"
+            });
+            saveDraftToLocalStorage();
+            updateFilterDropdownOptions();
+            renderCards();
+            
+            // Open it automatically inside the editor panel right away
+            openModalEditor(0);
+        }
+    });
+
+    document.getElementById('restore-btn').addEventListener('click', () => {
+        const cachedRawDraft = localStorage.getItem('schedule_draft_cache');
+        if(cachedRawDraft) {
+            localScheduleData = JSON.parse(cachedRawDraft);
+            updateFilterDropdownOptions();
+            renderCards();
+            document.getElementById('recovery-banner').style.display = 'none';
+            document.getElementById('status').innerText = "Restored modified unsaved changes from local cache.";
+            document.getElementById('status').style.color = "#f59e0b";
+        }
+    });
+
+    document.getElementById('discard-btn').addEventListener('click', () => {
+        if(confirm("Are you sure you want to permanently delete your unsaved changes?")) {
+            clearLocalDraftCache();
+            if(document.getElementById('gh-token').value.trim()) {
+                loadData();
+            } else {
+                localScheduleData = [];
+                updateFilterDropdownOptions();
+                renderCards();
+            }
+        }
+    });
+
+    document.getElementById('load-btn').addEventListener('click', loadData);
+    document.getElementById('save-btn').addEventListener('click', saveData);
+</script>
+</body>
+</html>
