@@ -16,6 +16,7 @@
             --text-color: #f3f4f6;
             --danger-color: #ef4444;
             --success-color: #10b981;
+            --warning-color: #f59e0b;
         }
 
         body {
@@ -113,6 +114,27 @@
             background-color: #059669;
         }
 
+        /* Recovery Banner Styling */
+        .recovery-banner {
+            background-color: #2e2213;
+            border: 1px solid var(--warning-color);
+            color: #fef3c7;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .recovery-banner button {
+            background-color: var(--warning-color);
+            color: #000;
+        }
+        .recovery-banner button:hover {
+            background-color: #d97706;
+        }
+
         .tabulator {
             border-radius: 8px;
             overflow: hidden;
@@ -120,7 +142,6 @@
             background: var(--panel-bg) !important;
         }
 
-        /* Fix layout truncation: enable cell text wrapping for long content */
         .tabulator-cell {
             white-space: normal !important;
             text-overflow: clip !important;
@@ -145,6 +166,14 @@
         <span id="status" class="status-message">Enter token to securely download schedule data.</span>
     </div>
 
+    <div id="recovery-banner" class="recovery-banner">
+        <span>⚠️ Found unsaved local updates from your last session that weren't pushed to GitHub!</span>
+        <div>
+            <button id="restore-btn">Restore Unsaved Work</button>
+            <button id="discard-btn" class="btn-danger" style="margin-left: 8px;">Discard</button>
+        </div>
+    </div>
+
     <header>
         <h1>Events Schedule Data Grid</h1>
         <div class="toolbar">
@@ -158,16 +187,14 @@
 </div>
 
 <script>
-    // Config values explicitly set for your repo pathing layout
     const OWNER = 'MohammadiaCenter';
     const REPO = 'eventsschedule';
     const FILE_PATH = 'eventsschedule.json';
     const BRANCH = 'main';
     
     let table;
-    let currentFileSha = ""; // Tracking dynamic checksum mutations for GitHub updates
+    let currentFileSha = ""; 
 
-    // Strict explicit row column structure mapped precisely to your JSON dataset properties
     const tableColumns = [
         {formatter:"rowSelection", titleFormatter:"rowSelection", hozAlign:"center", headerSort:false, width:45, frozen:true},
         {title:"Type", field:"type", editor:"list", editorParams:{values:["Men", "Ladies", "General"]}, width:100},
@@ -180,14 +207,51 @@
         {title:"Address", field:"address", editor:"input", width:300}
     ];
 
-    // Load spreadsheet instance initially empty with fixed horizontal scroll rules
+    // Initialize layout setup
     table = new Tabulator("#events-table", {
         columns: tableColumns,
-        layout: "fitDataFill", // Changes sizing calculation logic to respect custom cell widths over bounding rules
+        layout: "fitDataFill", 
         history: true,
-        movableRows: true, // Allows dragging rows up/down to sort visually
+        movableRows: true, 
         placeholder: "No active record items running. Click 'Sync from GitHub' above.",
+        // Real-time Event Handler: Fires automatically whenever rows change or cells are edited
+        dataChanged: function(data) {
+            saveDraftToLocalStorage(data);
+        }
     });
+
+    // On Initial Window Page Load: Autofill cached context tokens and check for unsaved drafts
+    window.addEventListener('DOMContentLoaded', () => {
+        const savedToken = localStorage.getItem('gh_token_cache');
+        const savedSha = localStorage.getItem('gh_sha_cache');
+        
+        if (savedToken) {
+            document.getElementById('gh-token').value = savedToken;
+            document.getElementById('status').innerText = "Cached token located. Click 'Sync from GitHub' to fetch data.";
+        }
+        
+        if (savedSha) {
+            currentFileSha = savedSha;
+        }
+
+        // Check if browser contains an interrupted draft payload
+        if (localStorage.getItem('schedule_draft_cache')) {
+            document.getElementById('recovery-banner').style.display = 'flex';
+        }
+    });
+
+    // Helper: Store real-time edits as local browser cache backups
+    function saveDraftToLocalStorage(data) {
+        if(data && data.length > 0) {
+            localStorage.setItem('schedule_draft_cache', JSON.stringify(data));
+        }
+    }
+
+    // Clear local storage tracks once updates are cleanly committed up to master source repository
+    function clearLocalDraftCache() {
+        localStorage.removeItem('schedule_draft_cache');
+        document.getElementById('recovery-banner').style.display = 'none';
+    }
 
     // Fetch Schedule array down from repository file endpoints
     async function loadData() {
@@ -198,6 +262,9 @@
             alert("Authentication Error: GitHub Personal Access Token is required.");
             return;
         }
+
+        // Cache token validation data inside storage values safely
+        localStorage.setItem('gh_token_cache', token);
 
         statusSpan.innerText = "Connecting and parsing schema upstream...";
         statusSpan.style.color = "#9ca3af";
@@ -211,16 +278,18 @@
             if (!response.ok) throw new Error(`Fetch Exception: ${response.status} ${response.statusText}`);
 
             const fileData = await response.json();
-            currentFileSha = fileData.sha; // Capture structural lock pointer
+            currentFileSha = fileData.sha; 
+            localStorage.setItem('gh_sha_cache', currentFileSha);
 
-            // Safely unpack content parsing from base64 encoding
             const rawContent = decodeURIComponent(escape(atob(fileData.content)));
             const parsedJson = JSON.parse(rawContent);
-            
-            // Extract inner child array safely from your 'schedule' element field container
             const scheduleArray = parsedJson.schedule || [];
 
             table.setData(scheduleArray);
+            
+            // If pulling a completely fresh sheet down, wipe out old drafts
+            clearLocalDraftCache();
+
             statusSpan.innerText = `Successfully loaded ${scheduleArray.length} items. Ready to edit.`;
             statusSpan.style.color = "#10b981";
         } catch (error) {
@@ -243,13 +312,11 @@
         statusSpan.innerText = "Preparing payload & submitting commit metadata...";
         statusSpan.style.color = "#9ca3af";
 
-        // Reconstruct exact structural object wrapper alignment
         const currentRowsData = table.getData();
         const updatedPayload = {
             schedule: currentRowsData
         };
         
-        // Output clean structured spacing mimicking local layout signatures 
         const jsonOutputString = JSON.stringify(updatedPayload, null, 2);
 
         try {
@@ -262,7 +329,7 @@
                 },
                 body: JSON.stringify({
                     message: "Content Update: Schedule entries updated via data grid dashboard panel",
-                    content: btoa(unescape(encodeURIComponent(jsonOutputString))), // Standard clear safe Base64 formatting transformation helper
+                    content: btoa(unescape(encodeURIComponent(jsonOutputString))), 
                     sha: currentFileSha,
                     branch: BRANCH
                 })
@@ -271,8 +338,12 @@
             if (!response.ok) throw new Error(`Push Error: ${response.statusText}`);
             
             const executionConfirmation = await response.json();
-            currentFileSha = executionConfirmation.content.sha; // Save next rolling transaction state validation reference
+            currentFileSha = executionConfirmation.content.sha; 
+            localStorage.setItem('gh_sha_cache', currentFileSha);
             
+            // Wipe out local backup files upon successful integration
+            clearLocalDraftCache();
+
             statusSpan.innerText = "Changes compiled & deployed seamlessly onto GitHub main!";
             statusSpan.style.color = "#10b981";
             alert("Success! Your GitHub file has been rewritten with the new data.");
@@ -283,12 +354,28 @@
         }
     }
 
-    // Trigger assignments control maps binding routines
+    // Draft Actions Bindings
+    document.getElementById('restore-btn').addEventListener('click', () => {
+        const cachedRawDraft = localStorage.getItem('schedule_draft_cache');
+        if(cachedRawDraft) {
+            table.setData(JSON.parse(cachedRawDraft));
+            document.getElementById('recovery-banner').style.display = 'none';
+            document.getElementById('status').innerText = "Restored modified unsaved changes from local cache.";
+            document.getElementById('status').style.color = "#f59e0b";
+        }
+    });
+
+    document.getElementById('discard-btn').addEventListener('click', () => {
+        if(confirm("Are you sure you want to permanently delete your unsaved changes?")) {
+            clearLocalDraftCache();
+        }
+    });
+
+    // Control assignments maps triggers binding routines
     document.getElementById('load-btn').addEventListener('click', loadData);
     document.getElementById('save-btn').addEventListener('click', saveData);
     
     document.getElementById('add-row-btn').addEventListener('click', () => {
-        // Appends pristine empty structural record matching layout structure requirements to bottom of list
         table.addRow({
             type: "Men",
             islamic_date: "",
