@@ -27,8 +27,10 @@
             padding: 24px;
         }
 
+        /* 1. Increased maximum container width to give the table more horizontal workspace */
         .container {
-            max-width: 1400px;
+            width: 95%;
+            max-width: 1800px;
             margin: 0 auto;
         }
 
@@ -140,13 +142,7 @@
             overflow: hidden;
             border: 1px solid #23263a !important;
             background: var(--panel-bg) !important;
-        }
-
-        /* Fix layout truncation: enable cell text wrapping for long content */
-        .tabulator-cell {
-            white-space: normal !important;
-            text-overflow: clip !important;
-            word-wrap: break-word !important;
+            width: 100%; /* 2. Force the table element to take the full width of the container */
         }
 
         .status-message {
@@ -188,16 +184,14 @@
 </div>
 
 <script>
-    // Config values explicitly set for your repo pathing layout
     const OWNER = 'MohammadiaCenter';
     const REPO = 'eventsschedule';
     const FILE_PATH = 'eventschedule.json';
     const BRANCH = 'main';
     
     let table;
-    let currentFileSha = ""; // Tracking dynamic checksum mutations for GitHub updates
+    let currentFileSha = ""; 
 
-    // Strict explicit row column structure mapped precisely to your JSON dataset properties
     const tableColumns = [
         {formatter:"rowSelection", titleFormatter:"rowSelection", hozAlign:"center", headerSort:false, width:45, frozen:true},
         {title:"Type", field:"type", editor:"list", editorParams:{values:["Men", "Ladies", "General"]}, width:100},
@@ -210,20 +204,18 @@
         {title:"Address", field:"address", editor:"input", width:300}
     ];
 
-    // Load spreadsheet instance initially empty with fixed horizontal scroll rules
+    // Reverted back to fitColumns layout mode inside our freshly expanded dashboard frame
     table = new Tabulator("#events-table", {
         columns: tableColumns,
-        layout: "fitDataFill", // Changes sizing calculation logic to respect custom cell widths over bounding rules
+        layout: "fitColumns", 
         history: true,
-        movableRows: true, // Allows dragging rows up/down to sort visually
+        movableRows: true, 
         placeholder: "No active record items running. Click 'Sync from GitHub' above.",
-        // Real-time Event Handler: Fires automatically whenever rows change or cells are edited
         dataChanged: function(data) {
             saveDraftToLocalStorage(data);
         }
     });
 
-    // On Initial Window Page Load: Autofill cached context tokens and check for unsaved drafts
     window.addEventListener('DOMContentLoaded', () => {
         const savedToken = localStorage.getItem('gh_token_cache');
         const savedSha = localStorage.getItem('gh_sha_cache');
@@ -237,26 +229,22 @@
             currentFileSha = savedSha;
         }
 
-        // Check if browser contains an interrupted draft payload
         if (localStorage.getItem('schedule_draft_cache')) {
             document.getElementById('recovery-banner').style.display = 'flex';
         }
     });
 
-    // Helper: Store real-time edits as local browser cache backups
     function saveDraftToLocalStorage(data) {
         if(data && data.length > 0) {
             localStorage.setItem('schedule_draft_cache', JSON.stringify(data));
         }
     }
 
-    // Clear local storage tracks once updates are cleanly committed up to master source repository
     function clearLocalDraftCache() {
         localStorage.removeItem('schedule_draft_cache');
         document.getElementById('recovery-banner').style.display = 'none';
     }
 
-    // Fetch Schedule array down from repository file endpoints
     async function loadData() {
         const token = document.getElementById('gh-token').value.trim();
         const statusSpan = document.getElementById('status');
@@ -266,9 +254,7 @@
             return;
         }
 
-        // Cache token validation data inside storage values safely
         localStorage.setItem('gh_token_cache', token);
-
         statusSpan.innerText = "Connecting and parsing schema upstream...";
         statusSpan.style.color = "#9ca3af";
 
@@ -284,16 +270,11 @@
             currentFileSha = fileData.sha; 
             localStorage.setItem('gh_sha_cache', currentFileSha);
 
-            // Safely unpack content parsing from base64 encoding
             const rawContent = decodeURIComponent(escape(atob(fileData.content)));
             const parsedJson = JSON.parse(rawContent);
-            
-            // Extract inner child array safely from your 'schedule' element field container
             const scheduleArray = parsedJson.schedule || [];
 
             table.setData(scheduleArray);
-            
-            // If pulling a completely fresh sheet down, wipe out old drafts
             clearLocalDraftCache();
 
             statusSpan.innerText = `Successfully loaded ${scheduleArray.length} items. Ready to edit.`;
@@ -305,7 +286,6 @@
         }
     }
 
-    // Rebundle mutated spreadsheet data records arrays and overwrite target source file
     async function saveData() {
         const token = document.getElementById('gh-token').value.trim();
         const statusSpan = document.getElementById('status');
@@ -318,13 +298,11 @@
         statusSpan.innerText = "Preparing payload & submitting commit metadata...";
         statusSpan.style.color = "#9ca3af";
 
-        // Reconstruct exact structural object wrapper alignment
         const currentRowsData = table.getData();
         const updatedPayload = {
             schedule: currentRowsData
         };
         
-        // Output clean structured spacing mimicking local layout signatures 
         const jsonOutputString = JSON.stringify(updatedPayload, null, 2);
 
         try {
@@ -337,7 +315,7 @@
                 },
                 body: JSON.stringify({
                     message: "Content Update: Schedule entries updated via data grid dashboard panel",
-                    content: btoa(unescape(encodeURIComponent(jsonOutputString))), // Standard clear safe Base64 formatting transformation helper
+                    content: btoa(unescape(encodeURIComponent(jsonOutputString))), 
                     sha: currentFileSha,
                     branch: BRANCH
                 })
@@ -349,7 +327,6 @@
             currentFileSha = executionConfirmation.content.sha; 
             localStorage.setItem('gh_sha_cache', currentFileSha);
             
-            // Wipe out local backup files upon successful integration
             clearLocalDraftCache();
 
             statusSpan.innerText = "Changes compiled & deployed seamlessly onto GitHub main!";
@@ -362,7 +339,6 @@
         }
     }
 
-    // Draft Actions Bindings
     document.getElementById('restore-btn').addEventListener('click', () => {
         const cachedRawDraft = localStorage.getItem('schedule_draft_cache');
         if(cachedRawDraft) {
@@ -379,12 +355,10 @@
         }
     });
 
-    // Trigger assignments control maps binding routines
     document.getElementById('load-btn').addEventListener('click', loadData);
     document.getElementById('save-btn').addEventListener('click', saveData);
     
     document.getElementById('add-row-btn').addEventListener('click', () => {
-        // Appends pristine empty structural record matching layout structure requirements to bottom of list
         table.addRow({
             type: "Men",
             islamic_date: "",
