@@ -1,0 +1,16 @@
+{
+  "board_of_directors": [
+    { "name": "Jafar H. Shah", "role": "President", "phone": "571-288-2488" },
+    { "name": "Syed Arshad Jaffery", "role": "Vice President", "phone": "202-344-5107" },
+    { "name": "Syed Ali A. Bukhari", "role": "General Secretary & Treasurer", "phone": "571-216-4683" },
+    { "name": "Syed Ajwad Naqvi", "role": "Director", "phone": "703-606-5998" },
+    { "name": "Nasir Khan", "role": "Director", "phone": "540-841-5957" }
+  ],
+  "board_of_trustees": [
+    { "name": "Syed Jawwad Shirazi", "role": "Chairman", "phone": "703-303-0438" },
+    { "name": "Wazir Chagla", "role": "Vice Chairman", "phone": "703-321-6582" },
+    { "name": "Jawaid Naqvi", "role": "Trustee", "phone": "703-909-8647" },
+    { "name": "Syed Shahid Tirmizi", "role": "Trustee", "phone": "571-437-0120" },
+    { "name": "Syed Zulfiqar Zaidi", "role": "Trustee", "phone": "703-342-8427" }
+  ]
+}
