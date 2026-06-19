@@ -42,7 +42,7 @@
             background-color: #F8FAFC;
         }
 
-        /* Custom Scrollbar for a premium feel */
+        /* Custom Scrollbar */
         ::-webkit-scrollbar {
             width: 6px;
             height: 6px;
@@ -67,10 +67,18 @@
             content: attr(placeholder);
             color: #94a3b8;
             pointer-events: none;
-            display: block; /* For Firefox */
+            display: block;
         }
         #editor:focus {
             outline: none;
+        }
+        /* Ensure images inside editor don't break layout */
+        #editor img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 6px;
+            margin: 10px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
 
         /* Smooth Toast Animation */
@@ -173,6 +181,7 @@
                         </div>
                     </div>
 
+                    <!-- Enhanced Toolbar -->
                     <div class="bg-slate-50/80 border-b border-slate-100 px-6 py-2 flex items-center gap-1">
                         <div class="flex items-center bg-white border border-slate-200 rounded-lg p-1 shadow-sm">
                             <button onclick="document.execCommand('bold')" class="w-8 h-8 rounded text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition flex items-center justify-center font-bold" title="Bold"><i class="fas fa-bold"></i></button>
@@ -184,11 +193,19 @@
                             <button onclick="document.execCommand('insertUnorderedList')" class="w-8 h-8 rounded text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition flex items-center justify-center" title="Bullet List"><i class="fas fa-list-ul"></i></button>
                             <button onclick="document.execCommand('insertOrderedList')" class="w-8 h-8 rounded text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition flex items-center justify-center" title="Numbered List"><i class="fas fa-list-ol"></i></button>
                         </div>
+                        <div class="w-px h-6 bg-slate-300 mx-2"></div>
+                        <div class="flex items-center bg-white border border-slate-200 rounded-lg p-1 shadow-sm">
+                            <!-- Hidden input for file selection -->
+                            <input type="file" id="imageInput" accept="image/*" class="hidden" onchange="handleImageUpload(event)">
+                            <button onclick="document.getElementById('imageInput').click()" class="w-8 h-8 rounded text-slate-600 hover:bg-brand-50 hover:text-brand-600 transition flex items-center justify-center" title="Insert Image">
+                                <i class="fas fa-image"></i>
+                            </button>
+                        </div>
                     </div>
 
                     <div id="editor" contenteditable="true" 
                          class="flex-1 p-8 overflow-y-auto text-slate-700 leading-relaxed text-[15px]"
-                         placeholder="Compose your message here..."></div>
+                         placeholder="Compose your message here... You can also drag & drop or paste images directly."></div>
                 </div>
             </div>
         </main>
@@ -206,14 +223,14 @@
             auth: {
                 clientId: "de2ead7b-e1f3-4075-8140-8db0e317ecad",
                 authority: "https://login.microsoftonline.com/165d4bba-ab23-41e4-bafc-d15a2f8ab1c6",
-                redirectUri: window.location.origin + window.location.pathname // Dynamically gets current URL
+                redirectUri: window.location.origin + window.location.pathname
             }
         };
 
         const msalInstance = new msal.PublicClientApplication(msalConfig);
         let allContacts = [];
 
-        // Utility: Generate Initials for Avatar
+        // Utility: Generate Initials
         function getInitials(name) {
             if (!name) return "?";
             return name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
@@ -241,13 +258,45 @@
 
             status.classList.remove('hidden');
             if (type !== 'loading') {
-                setTimeout(() => {
-                    status.classList.add('hidden');
-                }, 5000);
+                setTimeout(() => status.classList.add('hidden'), 5000);
             }
         }
 
-        // Authentication
+        // --- IMAGE HANDLING LOGIC ---
+
+        // Handle Image Upload via Button
+        function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (file) insertImageAsBase64(file);
+            event.target.value = ''; // Reset input
+        }
+
+        // Handle Image Paste directly into Editor
+        document.getElementById('editor').addEventListener('paste', function(e) {
+            const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+            for (let index in items) {
+                const item = items[index];
+                if (item.kind === 'file' && item.type.includes('image/')) {
+                    e.preventDefault(); // Stop default paste
+                    const file = item.getAsFile();
+                    insertImageAsBase64(file);
+                }
+            }
+        });
+
+        // Convert File to Base64 and Insert into Editor
+        function insertImageAsBase64(file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const base64Data = e.target.result;
+                document.getElementById('editor').focus();
+                document.execCommand('insertImage', false, base64Data);
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // --- AUTH & CONTACT LOGIC ---
+
         async function manualLogin() {
             try {
                 await msalInstance.loginPopup({ scopes: ["Mail.Send", "User.Read", "Contacts.Read"] });
@@ -258,10 +307,8 @@
             }
         }
 
-        // Fetch Contacts
         async function loadContacts() {
             showStatus("Syncing directory...", "loading");
-
             try {
                 let tokenResponse;
                 try {
@@ -283,12 +330,10 @@
                 renderContacts(allContacts);
                 showStatus(`Directory synced. ${allContacts.length} contacts found.`, "success");
             } catch (err) {
-                console.error(err);
                 showStatus("Failed to load contacts. Please connect account.", "error");
             }
         }
 
-        // Render Contacts List
         function renderContacts(contacts) {
             const container = document.getElementById("contactsList");
             if (contacts.length === 0) {
@@ -315,11 +360,9 @@
                 </label>
             `}).join('');
             
-            // Uncheck master if re-rendering
             document.getElementById('selectAllMaster').checked = false;
         }
 
-        // Search/Filter functionality
         function filterContacts() {
             const query = document.getElementById('contactSearch').value.toLowerCase();
             const filtered = allContacts.filter(c => {
@@ -330,7 +373,6 @@
             renderContacts(filtered);
         }
 
-        // Selection Handlers
         function toggleSelectAll(cb) { 
             document.querySelectorAll('.contact-check').forEach(c => c.checked = cb.checked); 
         }
@@ -340,15 +382,52 @@
                         .filter(e => e !== 'No email provided' && e);
         }
 
-        // Send Email Payload
+        // --- EMAIL DISPATCH & IMAGE PARSING LOGIC ---
+
         async function sendEmail(toAll = false) {
-            showStatus("Dispatching message...", "loading");
+            showStatus("Preparing message...", "loading");
 
             try {
                 const token = await msalInstance.acquireTokenSilent({ scopes: ["Mail.Send"] });
-                const bodyHtml = document.getElementById("editor").innerHTML;
+                let bodyHtml = document.getElementById("editor").innerHTML;
                 const subject = document.getElementById("subject").value || "Important Update from Mohammadia Center";
                 
+                // --- FIX GMAIL [X] ISSUE: Convert Base64 to Inline Attachments ---
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = bodyHtml;
+                const images = tempDiv.getElementsByTagName('img');
+                const attachments = [];
+                
+                for (let i = 0; i < images.length; i++) {
+                    const img = images[i];
+                    if (img.src.startsWith('data:image/')) {
+                        const srcSplit = img.src.split(',');
+                        const mimeMatch = srcSplit[0].match(/:(.*?);/);
+                        if (mimeMatch && srcSplit.length > 1) {
+                            const mimeType = mimeMatch[1];
+                            const ext = mimeType.split('/')[1] || 'png';
+                            const base64Data = srcSplit[1];
+                            const contentId = `inline_img_${i}`;
+                            
+                            // Change src to standard CID reference format
+                            img.src = `cid:${contentId}`;
+                            
+                            // Create attachment object expected by MS Graph
+                            attachments.push({
+                                "@odata.type": "#microsoft.graph.fileAttachment",
+                                "name": `image_${i}.${ext}`,
+                                "isInline": true,
+                                "contentId": contentId,
+                                "contentType": mimeType,
+                                "contentBytes": base64Data
+                            });
+                        }
+                    }
+                }
+                
+                // Update HTML body with replaced cid references
+                bodyHtml = tempDiv.innerHTML;
+
                 // Construct standard recipients
                 const toVal = document.getElementById("to").value;
                 const ccVal = document.getElementById("cc").value;
@@ -365,19 +444,21 @@
                 } else if (selectedEmails.length > 0) {
                     bccRecipients = selectedEmails;
                 }
-
-                // Map to API object structure
                 bccRecipients = bccRecipients.map(email => ({ emailAddress: { address: email } }));
 
+                // Final Payload Structure
                 const emailData = {
                     message: {
                         subject: subject,
                         body: { contentType: "HTML", content: bodyHtml || "<p></p>" },
                         toRecipients: toRecipients,
                         ccRecipients: ccRecipients,
-                        bccRecipients: bccRecipients.length ? bccRecipients : undefined
+                        bccRecipients: bccRecipients.length ? bccRecipients : undefined,
+                        attachments: attachments.length ? attachments : undefined
                     }
                 };
+
+                showStatus("Dispatching via Microsoft Graph...", "loading");
 
                 const response = await fetch("https://graph.microsoft.com/v1.0/me/sendMail", {
                     method: "POST",
@@ -387,9 +468,6 @@
 
                 if (response.ok) {
                     showStatus("Message dispatched successfully.", "success");
-                    // Optional: Clear form after send
-                    // document.getElementById("editor").innerHTML = "";
-                    // document.getElementById("subject").value = "";
                 } else {
                     const errData = await response.json();
                     throw new Error(errData.error?.message || "API Error");
@@ -400,7 +478,6 @@
             }
         }
 
-        // Mass Action Button
         function sendToAllContacts() {
             if (allContacts.length === 0) {
                 showStatus("Directory is empty. Load contacts first.", "error");
