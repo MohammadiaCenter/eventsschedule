@@ -4,182 +4,137 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>New Message - Mohammadia Center</title>
-    <script src="https://alcdn.msauth.net/browser/2.35.0/js/msal-browser.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            content: [],
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0B5B4A',
+                        accent: '#D4AF37',
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;500;600&display=swap');
-
-        :root {
-            --outlook-blue: #0078D4;
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { 
-            font-family: 'Segoe UI', system-ui, sans-serif; 
-            background: #f3f2f1; 
-            height: 100vh;
-            overflow: hidden;
-        }
-
-        .top-bar {
-            background: white;
-            padding: 8px 16px;
-            border-bottom: 1px solid #e1e1e1;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-
-        .main {
-            display: flex;
-            height: calc(100vh - 60px);
-        }
-
-        .sidebar {
-            width: 280px;
-            background: white;
-            border-right: 1px solid #e1e1e1;
-            padding: 16px;
-            overflow-y: auto;
-        }
-
-        .compose-area {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            background: white;
-        }
-
-        .ribbon {
-            background: #f3f2f1;
-            padding: 6px 12px;
-            border-bottom: 1px solid #e1e1e1;
-            display: flex;
-            gap: 6px;
-            flex-wrap: wrap;
-        }
-
-        .ribbon button {
-            padding: 6px 10px;
-            background: white;
-            border: 1px solid #ccc;
-            border-radius: 3px;
-            cursor: pointer;
-        }
-
-        .header-fields {
-            padding: 12px 20px;
-            border-bottom: 1px solid #e1e1e1;
-            background: white;
-        }
-
-        .field {
-            display: flex;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-
-        .field label {
-            width: 60px;
-            font-weight: 500;
-            color: #666;
-        }
-
-        input {
-            flex: 1;
-            border: none;
-            outline: none;
-            padding: 6px 0;
-            font-size: 1rem;
-        }
-
-        #editor {
-            flex: 1;
-            padding: 20px;
-            outline: none;
-            overflow-y: auto;
-            line-height: 1.7;
-            font-size: 1.05rem;
-        }
-
-        .status {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            padding: 12px 20px;
-            border-radius: 4px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            z-index: 1000;
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+        body { font-family: 'Inter', system-ui, sans-serif; }
+        #editor { min-height: 420px; }
     </style>
 </head>
-<body>
-    <div class="top-bar">
-        <button onclick="sendEmail(false)" style="background:#0078D4;color:white;padding:8px 24px;border:none;border-radius:4px;font-weight:600;">
-            <i class="fas fa-paper-plane"></i> Send
-        </button>
-        <button onclick="window.location.reload()" style="padding:8px 16px;">Discard</button>
-        <span style="margin-left:auto;color:#0078D4;font-weight:500;">Mohammadia Center</span>
-    </div>
+<body class="bg-gray-50">
 
-    <div class="main">
-        <!-- Sidebar -->
-        <div class="sidebar">
-            <h3 style="margin-bottom:12px;">Contacts</h3>
-            <button onclick="loadContacts()" style="width:100%;padding:10px;background:#0078D4;color:white;border:none;border-radius:4px;margin-bottom:12px;">
-                <i class="fas fa-sync"></i> Load Contacts
-            </button>
-
-            <div id="contactsList" style="max-height:calc(100vh - 220px);overflow-y:auto;"></div>
-
-            <div style="margin-top:12px;">
-                <button onclick="selectAllContacts()" style="width:48%;">Select All</button>
-                <button onclick="clearSelection()" style="width:48%;">Clear</button>
+    <!-- Top Bar -->
+    <header class="bg-white border-b border-gray-200 shadow-sm">
+        <div class="max-w-screen-2xl mx-auto px-6 py-3 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <i class="fas fa-mosque text-2xl text-primary"></i>
+                <div>
+                    <h1 class="text-xl font-semibold text-gray-800">Mohammadia Center</h1>
+                    <p class="text-xs text-gray-500 -mt-1">New Message</p>
+                </div>
             </div>
-
-            <button onclick="sendToAllContacts()" style="margin-top:20px;width:100%;background:#D4AF37;color:#222;padding:10px;border:none;border-radius:4px;">
-                Send to All Contacts (BCC)
+            <button onclick="sendEmail(false)" 
+                    class="bg-primary hover:bg-emerald-700 text-white px-8 py-2.5 rounded-xl font-medium flex items-center gap-2 transition">
+                <i class="fas fa-paper-plane"></i>
+                <span>Send</span>
             </button>
         </div>
+    </header>
 
-        <!-- Compose Area -->
-        <div class="compose-area">
-            <div class="header-fields">
-                <div class="field">
-                    <label>To:</label>
-                    <input type="email" id="to" placeholder="info@mohammadia.org">
+    <div class="max-w-screen-2xl mx-auto flex h-[calc(100vh-73px)]">
+        
+        <!-- Sidebar - Contacts -->
+        <div class="w-80 border-r border-gray-200 bg-white overflow-y-auto">
+            <div class="p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="font-semibold text-lg">Contacts</h2>
+                    <button onclick="loadContacts()" 
+                            class="text-primary hover:text-emerald-700 flex items-center gap-2 text-sm font-medium">
+                        <i class="fas fa-sync"></i> Refresh
+                    </button>
                 </div>
-                <div class="field">
-                    <label>Cc:</label>
-                    <input type="email" id="cc">
+
+                <button onclick="loadContacts()" 
+                        class="w-full bg-primary text-white py-3 rounded-2xl font-medium mb-6 hover:bg-emerald-700 transition">
+                    Load My Contacts
+                </button>
+
+                <div class="mb-3 flex items-center justify-between text-sm">
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" id="selectAllMaster" onchange="toggleSelectAll(this)" class="w-4 h-4 accent-primary">
+                        <span class="font-medium">Select All</span>
+                    </label>
+                    <span id="count" class="text-gray-500 text-xs"></span>
                 </div>
-                <div class="field">
-                    <label>Subject:</label>
-                    <input type="text" id="subject" placeholder="Announcement / Update">
+
+                <div id="contactsList" class="space-y-1 max-h-[calc(100vh-340px)] overflow-y-auto pr-2"></div>
+
+                <div class="mt-6 flex gap-3">
+                    <button onclick="selectAllContacts()" 
+                            class="flex-1 py-2.5 text-sm font-medium border border-gray-300 rounded-2xl hover:bg-gray-50">
+                        Select All
+                    </button>
+                    <button onclick="clearSelection()" 
+                            class="flex-1 py-2.5 text-sm font-medium border border-gray-300 rounded-2xl hover:bg-gray-50">
+                        Clear
+                    </button>
+                </div>
+
+                <button onclick="sendToAllContacts()" 
+                        class="mt-8 w-full bg-amber-400 hover:bg-amber-500 text-gray-900 py-3.5 rounded-3xl font-semibold flex items-center justify-center gap-2">
+                    <i class="fas fa-users"></i>
+                    Send to All Contacts (BCC)
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Compose Area -->
+        <div class="flex-1 flex flex-col bg-white">
+            <!-- Fields -->
+            <div class="border-b border-gray-100 p-6 space-y-5">
+                <div class="flex gap-4">
+                    <div class="w-20 text-right text-sm font-medium text-gray-600 pt-2">To</div>
+                    <input id="to" type="email" placeholder="info@mohammadia.org" 
+                           class="flex-1 border border-gray-200 focus:border-primary rounded-2xl px-5 py-3 outline-none">
+                </div>
+                <div class="flex gap-4">
+                    <div class="w-20 text-right text-sm font-medium text-gray-600 pt-2">Cc</div>
+                    <input id="cc" type="email" placeholder="Optional" 
+                           class="flex-1 border border-gray-200 focus:border-primary rounded-2xl px-5 py-3 outline-none">
+                </div>
+                <div class="flex gap-4">
+                    <div class="w-20 text-right text-sm font-medium text-gray-600 pt-2">Subject</div>
+                    <input id="subject" type="text" placeholder="Important Announcement" 
+                           class="flex-1 border border-gray-200 focus:border-primary rounded-2xl px-5 py-3 outline-none">
                 </div>
             </div>
 
-            <!-- Ribbon -->
-            <div class="ribbon">
-                <button onclick="document.execCommand('bold')" title="Bold"><b>B</b></button>
-                <button onclick="document.execCommand('italic')" title="Italic"><i>I</i></button>
-                <button onclick="document.execCommand('underline')" title="Underline"><u>U</u></button>
-                <button onclick="document.execCommand('insertUnorderedList')">• Bullets</button>
-                <button onclick="document.execCommand('justifyLeft')">Left</button>
-                <button onclick="document.execCommand('justifyCenter')">Center</button>
-                <button onclick="document.execCommand('insertHorizontalRule')">— Line</button>
+            <!-- Toolbar -->
+            <div class="bg-gray-50 border-b border-gray-100 px-6 py-3 flex items-center gap-2">
+                <button onclick="document.execCommand('bold')" class="w-9 h-9 hover:bg-gray-200 rounded-xl flex items-center justify-center"><b>B</b></button>
+                <button onclick="document.execCommand('italic')" class="w-9 h-9 hover:bg-gray-200 rounded-xl flex items-center justify-center"><i>I</i></button>
+                <button onclick="document.execCommand('underline')" class="w-9 h-9 hover:bg-gray-200 rounded-xl flex items-center justify-center"><u>U</u></button>
+                <button onclick="document.execCommand('insertUnorderedList')" class="w-9 h-9 hover:bg-gray-200 rounded-xl flex items-center justify-center">•</button>
+                <button onclick="document.execCommand('justifyLeft')" class="w-9 h-9 hover:bg-gray-200 rounded-xl flex items-center justify-center">⇤</button>
+                <button onclick="document.execCommand('justifyCenter')" class="w-9 h-9 hover:bg-gray-200 rounded-xl flex items-center justify-center">↔</button>
             </div>
 
-            <!-- Editor -->
-            <div id="editor" contenteditable="true" placeholder="Start typing your message..."></div>
+            <!-- Rich Text Editor -->
+            <div id="editor" contenteditable="true" 
+                 class="flex-1 p-8 focus:outline-none text-[17px] leading-relaxed overflow-y-auto"
+                 placeholder="Write your message here..."></div>
+
+            <!-- Status -->
+            <div id="status" class="hidden fixed bottom-6 right-6 px-6 py-3 rounded-2xl shadow-xl text-white"></div>
         </div>
     </div>
-
-    <div id="status" class="status" style="display:none;"></div>
 
     <script>
-        const msalConfig = {
+        const msalConfig = { /* same as before */ 
             auth: {
                 clientId: "de2ead7b-e1f3-4075-8140-8db0e317ecad",
                 authority: "https://login.microsoftonline.com/165d4bba-ab23-41e4-bafc-d15a2f8ab1c6",
@@ -190,17 +145,14 @@
         const msalInstance = new msal.PublicClientApplication(msalConfig);
         let allContacts = [];
 
-        // Login
-        async function login() {
+        // Login on load
+        window.onload = async () => {
             try {
                 await msalInstance.loginPopup({ scopes: ["Mail.Send", "User.Read", "Contacts.Read"] });
-                alert("✅ Logged in successfully!");
-            } catch (e) {
-                alert("Login failed.");
-            }
-        }
+            } catch (e) {}
+            document.getElementById("editor").focus();
+        };
 
-        // Load Contacts
         async function loadContacts() {
             try {
                 const token = await msalInstance.acquireTokenSilent({ scopes: ["Contacts.Read"] });
@@ -211,37 +163,44 @@
                 allContacts = data.value || [];
                 renderContacts();
             } catch (err) {
-                alert("Could not load contacts. Please login again.");
+                showStatus("Failed to load contacts", "error");
             }
         }
 
         function renderContacts() {
             const container = document.getElementById("contactsList");
             container.innerHTML = allContacts.map(c => `
-                <div style="padding:10px 12px;border-bottom:1px solid #eee;display:flex;align-items:center;gap:10px;">
-                    <input type="checkbox" class="contact-check" data-email="${c.emailAddresses?.[0]?.address || ''}">
-                    <div>
-                        <strong>${c.displayName || 'No Name'}</strong><br>
-                        <small>${c.emailAddresses?.[0]?.address || ''}</small>
+                <div class="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 rounded-2xl cursor-pointer">
+                    <input type="checkbox" class="contact-check w-5 h-5 accent-primary" 
+                           data-email="${c.emailAddresses?.[0]?.address || ''}">
+                    <div class="flex-1">
+                        <div class="font-medium">${c.displayName || 'Unnamed'}</div>
+                        <div class="text-sm text-gray-500">${c.emailAddresses?.[0]?.address || ''}</div>
                     </div>
                 </div>
             `).join('');
         }
 
         function toggleSelectAll(cb) { document.querySelectorAll('.contact-check').forEach(c => c.checked = cb.checked); }
-        function selectAllContacts() { toggleSelectAll({checked: true}); }
-        function clearSelection() { toggleSelectAll({checked: false}); }
+        function selectAllContacts() { toggleSelectAll({checked:true}); }
+        function clearSelection() { toggleSelectAll({checked:false}); }
         function getSelectedEmails() {
             return Array.from(document.querySelectorAll('.contact-check:checked')).map(cb => cb.dataset.email).filter(Boolean);
         }
 
-        // Send Email
+        function showStatus(msg, type = "success") {
+            const status = document.getElementById("status");
+            status.textContent = msg;
+            status.className = `fixed bottom-6 right-6 px-6 py-3 rounded-2xl shadow-xl text-white ${type === 'success' ? 'bg-green-600' : 'bg-red-600'}`;
+            status.classList.remove('hidden');
+            setTimeout(() => status.classList.add('hidden'), 4000);
+        }
+
         async function sendEmail(toAll = false) {
             const status = document.getElementById("status");
-            status.style.display = "block";
             status.textContent = "Sending...";
-            status.style.background = "#0078D4";
-            status.style.color = "white";
+            status.className = "fixed bottom-6 right-6 px-6 py-3 rounded-2xl shadow-xl text-white bg-blue-600";
+            status.classList.remove('hidden');
 
             try {
                 const token = await msalInstance.acquireTokenSilent({ scopes: ["Mail.Send"] });
@@ -249,13 +208,9 @@
                 const subject = document.getElementById("subject").value || "Message from Mohammadia Center";
 
                 let toRecipients = [{ emailAddress: { address: "info@mohammadia.org" } }];
-                let bccRecipients = [];
-
-                if (toAll || getSelectedEmails().length > 0) {
-                    bccRecipients = toAll 
-                        ? allContacts.map(c => ({ emailAddress: { address: c.emailAddresses?.[0]?.address } })).filter(r => r.emailAddress.address)
-                        : getSelectedEmails().map(e => ({ emailAddress: { address: e } }));
-                }
+                let bccRecipients = toAll || getSelectedEmails().length > 0 
+                    ? (toAll ? allContacts : getSelectedEmails()).map(e => ({ emailAddress: { address: typeof e === 'string' ? e : e.emailAddresses?.[0]?.address } })).filter(Boolean)
+                    : [];
 
                 const emailData = {
                     message: {
@@ -273,24 +228,17 @@
                 });
 
                 if (response.ok) {
-                    status.textContent = "✅ Email Sent Successfully!";
-                    status.style.background = "#107c10";
+                    showStatus("✅ Email sent successfully!", "success");
                 } else throw new Error();
             } catch (err) {
-                status.textContent = "❌ Failed to send email";
-                status.style.background = "#a4262c";
+                showStatus("❌ Failed to send email", "error");
             }
         }
 
         function sendToAllContacts() {
-            if (allContacts.length === 0) return alert("Load contacts first");
+            if (allContacts.length === 0) return alert("Please load contacts first");
             if (confirm(`Send to all ${allContacts.length} contacts using BCC?`)) sendEmail(true);
         }
-
-        // Auto login prompt
-        window.onload = () => {
-            document.getElementById("editor").focus();
-        };
     </script>
 </body>
 </html>
