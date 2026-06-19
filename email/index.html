@@ -72,7 +72,6 @@
         #editor:focus {
             outline: none;
         }
-        /* Ensure images inside editor don't break layout */
         #editor img {
             max-width: 100%;
             height: auto;
@@ -181,31 +180,60 @@
                         </div>
                     </div>
 
-                    <!-- Enhanced Toolbar -->
-                    <div class="bg-slate-50/80 border-b border-slate-100 px-6 py-2 flex items-center gap-1">
+                    <div class="bg-slate-50/80 border-b border-slate-100 px-6 py-2 flex flex-wrap items-center gap-2">
+                        
                         <div class="flex items-center bg-white border border-slate-200 rounded-lg p-1 shadow-sm">
                             <button onclick="document.execCommand('bold')" class="w-8 h-8 rounded text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition flex items-center justify-center font-bold" title="Bold"><i class="fas fa-bold"></i></button>
                             <button onclick="document.execCommand('italic')" class="w-8 h-8 rounded text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition flex items-center justify-center italic" title="Italic"><i class="fas fa-italic"></i></button>
                             <button onclick="document.execCommand('underline')" class="w-8 h-8 rounded text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition flex items-center justify-center underline" title="Underline"><i class="fas fa-underline"></i></button>
                         </div>
-                        <div class="w-px h-6 bg-slate-300 mx-2"></div>
+
+                        <div class="flex items-center bg-white border border-slate-200 rounded-lg p-1 shadow-sm">
+                            <select onchange="document.execCommand('fontSize', false, this.value); this.selectedIndex=0;" class="h-8 px-2 text-sm text-slate-600 bg-transparent outline-none cursor-pointer hover:bg-slate-50 rounded" title="Font Size">
+                                <option value="" disabled selected>Size</option>
+                                <option value="1">Smallest</option>
+                                <option value="2">Small</option>
+                                <option value="3">Normal</option>
+                                <option value="4">Large</option>
+                                <option value="5">X-Large</option>
+                                <option value="6">Huge</option>
+                            </select>
+                        </div>
+
+                        <div class="flex items-center bg-white border border-slate-200 rounded-lg p-1 shadow-sm gap-1">
+                            <div class="relative flex items-center justify-center w-8 h-8 rounded hover:bg-slate-100 transition cursor-pointer" title="Text Color">
+                                <i class="fas fa-font text-slate-600"></i>
+                                <input type="color" onchange="document.execCommand('foreColor', false, this.value)" class="absolute inset-0 opacity-0 w-full h-full cursor-pointer">
+                            </div>
+                            <div class="w-px h-5 bg-slate-200 mx-1"></div>
+                            <div class="relative flex items-center justify-center w-8 h-8 rounded hover:bg-slate-100 transition cursor-pointer" title="Highlight Color">
+                                <i class="fas fa-highlighter text-slate-600"></i>
+                                <input type="color" onchange="document.execCommand('backColor', false, this.value)" class="absolute inset-0 opacity-0 w-full h-full cursor-pointer">
+                            </div>
+                        </div>
+
                         <div class="flex items-center bg-white border border-slate-200 rounded-lg p-1 shadow-sm">
                             <button onclick="document.execCommand('insertUnorderedList')" class="w-8 h-8 rounded text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition flex items-center justify-center" title="Bullet List"><i class="fas fa-list-ul"></i></button>
                             <button onclick="document.execCommand('insertOrderedList')" class="w-8 h-8 rounded text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition flex items-center justify-center" title="Numbered List"><i class="fas fa-list-ol"></i></button>
                         </div>
-                        <div class="w-px h-6 bg-slate-300 mx-2"></div>
+
                         <div class="flex items-center bg-white border border-slate-200 rounded-lg p-1 shadow-sm">
-                            <!-- Hidden input for file selection -->
                             <input type="file" id="imageInput" accept="image/*" class="hidden" onchange="handleImageUpload(event)">
                             <button onclick="document.getElementById('imageInput').click()" class="w-8 h-8 rounded text-slate-600 hover:bg-brand-50 hover:text-brand-600 transition flex items-center justify-center" title="Insert Image">
                                 <i class="fas fa-image"></i>
+                            </button>
+                        </div>
+
+                        <div class="flex items-center bg-white border border-slate-200 rounded-lg p-1 shadow-sm ml-auto">
+                            <button onclick="document.execCommand('removeFormat')" class="w-8 h-8 rounded text-slate-600 hover:bg-red-50 hover:text-red-500 transition flex items-center justify-center" title="Clear Formatting">
+                                <i class="fas fa-eraser"></i>
                             </button>
                         </div>
                     </div>
 
                     <div id="editor" contenteditable="true" 
                          class="flex-1 p-8 overflow-y-auto text-slate-700 leading-relaxed text-[15px]"
-                         placeholder="Compose your message here... You can also drag & drop or paste images directly."></div>
+                         placeholder="Compose your message here... Highlight text to change colors and size, or drag & drop images directly."></div>
                 </div>
             </div>
         </main>
@@ -264,27 +292,24 @@
 
         // --- IMAGE HANDLING LOGIC ---
 
-        // Handle Image Upload via Button
         function handleImageUpload(event) {
             const file = event.target.files[0];
             if (file) insertImageAsBase64(file);
-            event.target.value = ''; // Reset input
+            event.target.value = ''; 
         }
 
-        // Handle Image Paste directly into Editor
         document.getElementById('editor').addEventListener('paste', function(e) {
             const items = (e.clipboardData || e.originalEvent.clipboardData).items;
             for (let index in items) {
                 const item = items[index];
                 if (item.kind === 'file' && item.type.includes('image/')) {
-                    e.preventDefault(); // Stop default paste
+                    e.preventDefault(); 
                     const file = item.getAsFile();
                     insertImageAsBase64(file);
                 }
             }
         });
 
-        // Convert File to Base64 and Insert into Editor
         function insertImageAsBase64(file) {
             const reader = new FileReader();
             reader.onload = function(e) {
@@ -392,7 +417,7 @@
                 let bodyHtml = document.getElementById("editor").innerHTML;
                 const subject = document.getElementById("subject").value || "Important Update from Mohammadia Center";
                 
-                // --- FIX GMAIL [X] ISSUE: Convert Base64 to Inline Attachments ---
+                // Convert Base64 to Inline Attachments (Fixes Gmail blocking)
                 const tempDiv = document.createElement('div');
                 tempDiv.innerHTML = bodyHtml;
                 const images = tempDiv.getElementsByTagName('img');
@@ -409,10 +434,8 @@
                             const base64Data = srcSplit[1];
                             const contentId = `inline_img_${i}`;
                             
-                            // Change src to standard CID reference format
                             img.src = `cid:${contentId}`;
                             
-                            // Create attachment object expected by MS Graph
                             attachments.push({
                                 "@odata.type": "#microsoft.graph.fileAttachment",
                                 "name": `image_${i}.${ext}`,
@@ -425,17 +448,14 @@
                     }
                 }
                 
-                // Update HTML body with replaced cid references
                 bodyHtml = tempDiv.innerHTML;
 
-                // Construct standard recipients
                 const toVal = document.getElementById("to").value;
                 const ccVal = document.getElementById("cc").value;
                 
                 let toRecipients = toVal ? [{ emailAddress: { address: toVal } }] : [{ emailAddress: { address: "info@mohammadia.org" } }];
                 let ccRecipients = ccVal ? [{ emailAddress: { address: ccVal } }] : undefined;
 
-                // Construct BCC list
                 const selectedEmails = getSelectedEmails();
                 let bccRecipients = [];
                 
@@ -446,7 +466,6 @@
                 }
                 bccRecipients = bccRecipients.map(email => ({ emailAddress: { address: email } }));
 
-                // Final Payload Structure
                 const emailData = {
                     message: {
                         subject: subject,
