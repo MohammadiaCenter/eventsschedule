@@ -7,182 +7,198 @@
     <script src="https://alcdn.msauth.net/browser/2.35.0/js/msal-browser.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@400;500;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;500;600&display=swap');
         
         :root {
-            --primary: #0B5B4A;
+            --primary: #0078D4;     /* Outlook Blue */
             --accent: #D4AF37;
             --dark: #1a2521;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Inter', system-ui, sans-serif; background: linear-gradient(135deg, #f8f9f7 0%, #e8edeb 100%); }
+        body { 
+            font-family: 'Segoe UI', system-ui, sans-serif; 
+            background: #f3f2f1; 
+        }
         
-        .header { background: var(--primary); color: white; padding: 1.5rem 0; box-shadow: 0 4px 12px rgba(11, 91, 74, 0.3); }
-        .container { max-width: 1200px; margin: 2rem auto; padding: 0 2rem; }
-        .card { background: white; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); overflow: hidden; }
-        .card-header { background: linear-gradient(90deg, var(--primary), #0f6b57); color: white; padding: 1.75rem 2rem; }
-        .main-content { padding: 2.5rem; }
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
-        .form-group { margin-bottom: 1.5rem; }
-        label { display: block; margin-bottom: 0.5rem; font-weight: 600; color: var(--dark); }
-
-        input, select, textarea {
-            width: 100%; padding: 12px 16px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 1rem;
+        .header { 
+            background: white; 
+            color: #333; 
+            padding: 12px 0; 
+            box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+            border-bottom: 1px solid #e1e1e1;
+        }
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
 
-        /* Rich Text Editor */
+        .main-container {
+            display: flex;
+            max-width: 1400px;
+            margin: 20px auto;
+            padding: 0 20px;
+            gap: 20px;
+        }
+
+        .sidebar {
+            width: 320px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            padding: 16px;
+            height: fit-content;
+        }
+
+        .content-area {
+            flex: 1;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            padding: 24px;
+        }
+
+        .form-group { margin-bottom: 1.5rem; }
+        label { display: block; margin-bottom: 6px; font-weight: 600; color: #444; }
+
+        input, textarea {
+            width: 100%; 
+            padding: 10px 12px; 
+            border: 1px solid #d1d1d1; 
+            border-radius: 4px; 
+            font-size: 1rem;
+        }
+
+        /* Outlook-like Rich Editor */
         #editor {
             width: 100%;
-            min-height: 320px;
-            border: 2px solid #e5e7eb;
-            border-radius: 8px;
+            min-height: 380px;
+            border: 1px solid #d1d1d1;
+            border-radius: 4px;
             padding: 16px;
             outline: none;
-            overflow-y: auto;
             line-height: 1.6;
             font-size: 1rem;
         }
         .toolbar {
-            background: #f8f9f7;
+            background: #f3f2f1;
             padding: 8px;
-            border: 2px solid #e5e7eb;
+            border: 1px solid #d1d1d1;
             border-bottom: none;
-            border-radius: 8px 8px 0 0;
+            border-radius: 4px 4px 0 0;
             display: flex;
-            gap: 6px;
-            flex-wrap: wrap;
+            gap: 4px;
         }
         .toolbar button {
             padding: 6px 10px;
             background: white;
-            border: 1px solid #ddd;
-            border-radius: 4px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            cursor: pointer;
         }
 
         .email-preview {
-            border: 2px solid #e5e7eb;
-            border-radius: 12px;
+            border: 1px solid #d1d1d1;
+            border-radius: 4px;
             padding: 25px;
             background: white;
-            min-height: 380px;
+            min-height: 400px;
             overflow-y: auto;
-            line-height: 1.7;
+            box-shadow: inset 0 0 8px rgba(0,0,0,0.05);
         }
 
-        .attachments-list {
-            margin-top: 8px;
-            font-size: 0.9rem;
+        button.primary {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 4px;
+            font-weight: 500;
         }
 
-        .status { margin-top: 1rem; padding: 12px; border-radius: 8px; text-align: center; font-weight: 500; }
-        .success { background: #d4edda; color: #155724; }
-        .error { background: #f8d7da; color: #721c24; }
+        .status { margin-top: 1rem; padding: 12px; border-radius: 4px; text-align: center; font-weight: 500; }
+        .success { background: #dff6dd; color: #107c10; }
+        .error { background: #fde7e9; color: #a4262c; }
     </style>
 </head>
 <body>
     <header class="header">
-        <div style="max-width:1200px;margin:0 auto;padding:0 2rem;display:flex;align-items:center;justify-content:space-between;">
-            <div style="display:flex;align-items:center;gap:12px;font-size:1.5rem;font-weight:700;">
-                <i class="fas fa-mosque"></i>
-                <span>Mohammadia Center</span>
+        <div class="header-content">
+            <div style="display:flex;align-items:center;gap:10px;">
+                <i class="fas fa-mosque" style="color:#0078D4;font-size:1.6rem;"></i>
+                <span style="font-size:1.3rem;font-weight:600;">Mohammadia Center</span>
             </div>
-            <h1 style="font-size:1.4rem;">Professional Email System</h1>
+            <h1 style="font-size:1.35rem;color:#333;">New Message</h1>
         </div>
     </header>
 
-    <div class="container">
-        <div class="card">
-            <div class="card-header">
-                <h2>Send Official Communication</h2>
-            </div>
-            <div class="main-content">
-                <button id="loginBtn" style="padding:16px 40px;font-size:1.1rem;">
-                    <i class="fas fa-sign-in-alt"></i> Sign in with Microsoft
-                </button>
-
-                <div id="emailForm" style="display:none; margin-top:2rem;">
-                    <div class="form-grid">
-                        <!-- Left Column -->
-                        <div>
-                            <div class="form-group">
-                                <label>Manual To (Optional)</label>
-                                <input type="email" id="to" placeholder="recipient@example.com">
-                            </div>
-                            <div class="form-group">
-                                <label>CC (Optional)</label>
-                                <input type="email" id="cc" placeholder="cc@example.com">
-                            </div>
-
-                            <div class="form-group">
-                                <label><i class="fas fa-address-book"></i> Contacts</label>
-                                <button onclick="loadContacts()" style="margin-bottom:12px;">
-                                    <i class="fas fa-sync"></i> Load My Contacts
-                                </button>
-                                <div class="contacts-section">
-                                    <div class="contacts-header">
-                                        <label style="margin:0; cursor:pointer;">
-                                            <input type="checkbox" id="selectAllMaster" onchange="toggleSelectAll(this)">
-                                            <strong>Select All Contacts</strong>
-                                        </label>
-                                        <span id="count" style="font-size:0.9rem;color:#666;"></span>
-                                    </div>
-                                    <div class="contacts-list" id="contactsList"></div>
-                                </div>
-                                <div style="margin-top:12px; display:flex; gap:8px;">
-                                    <button onclick="selectAllContacts()" style="flex:1;">Select All</button>
-                                    <button onclick="clearSelection()" style="flex:1;">Clear</button>
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <button onclick="sendToAllContacts()" style="background:#D4AF37; color:#1a2521; width:100%;">
-                                    <i class="fas fa-users"></i> Send to ALL Contacts
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Right Column -->
-                        <div>
-                            <div class="form-group">
-                                <label>Subject</label>
-                                <input type="text" id="subject" placeholder="Subject" required>
-                            </div>
-
-                            <div class="form-group">
-                                <label>Your Custom Message (Rich Text)</label>
-                                <div class="toolbar">
-                                    <button onclick="document.execCommand('bold')" title="Bold"><b>B</b></button>
-                                    <button onclick="document.execCommand('italic')" title="Italic"><i>I</i></button>
-                                    <button onclick="document.execCommand('underline')" title="Underline"><u>U</u></button>
-                                    <button onclick="document.execCommand('insertUnorderedList')" title="Bullet List">•</button>
-                                    <button onclick="document.execCommand('justifyLeft')" title="Align Left">Left</button>
-                                    <button onclick="document.execCommand('justifyCenter')" title="Align Center">Center</button>
-                                </div>
-                                <div id="editor" contenteditable="true" placeholder="Write your message here..."></div>
-                            </div>
-
-                            <div class="form-group">
-                                <label>Attachments</label>
-                                <input type="file" id="attachments" multiple>
-                                <div id="attachmentsList" class="attachments-list"></div>
-                            </div>
-
-                            <div class="form-group">
-                                <label>HTML Email Preview</label>
-                                <div id="htmlPreview" class="email-preview"></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div style="text-align:center; margin-top:2rem;">
-                        <button id="sendBtn" style="padding:16px 40px; font-size:1.2rem;" onclick="sendEmail(false)">
-                            <i class="fas fa-paper-plane"></i> Send to Selected Recipients
-                        </button>
-                    </div>
-
-                    <div id="status" class="status" style="display:none;"></div>
+    <div class="main-container">
+        <!-- Sidebar (Contacts) -->
+        <div class="sidebar">
+            <h3 style="margin-bottom:16px;">Contacts</h3>
+            <button onclick="loadContacts()" class="primary" style="width:100%;margin-bottom:12px;">
+                <i class="fas fa-sync"></i> Load My Contacts
+            </button>
+            
+            <div style="border:1px solid #e1e1e1;border-radius:4px;">
+                <div style="padding:10px;background:#f3f2f1;border-bottom:1px solid #e1e1e1;">
+                    <label><input type="checkbox" id="selectAllMaster" onchange="toggleSelectAll(this)"> Select All</label>
                 </div>
+                <div id="contactsList" style="max-height:520px;overflow-y:auto;"></div>
             </div>
+
+            <div style="margin-top:12px;display:flex;gap:8px;">
+                <button onclick="selectAllContacts()" style="flex:1;">Select All</button>
+                <button onclick="clearSelection()" style="flex:1;">Clear</button>
+            </div>
+
+            <button onclick="sendToAllContacts()" style="margin-top:20px;width:100%;background:#D4AF37;color:#1a2521;">
+                <i class="fas fa-users"></i> Send to ALL Contacts (BCC)
+            </button>
+        </div>
+
+        <!-- Main Compose Area -->
+        <div class="content-area">
+            <div class="form-group">
+                <label>To</label>
+                <input type="email" id="to" placeholder="info@mohammadia.org">
+            </div>
+            <div class="form-group">
+                <label>Cc</label>
+                <input type="email" id="cc" placeholder="cc@example.com">
+            </div>
+            <div class="form-group">
+                <label>Subject</label>
+                <input type="text" id="subject" placeholder="Enter subject">
+            </div>
+
+            <div class="form-group">
+                <label>Message</label>
+                <div class="toolbar">
+                    <button onclick="document.execCommand('bold')"><b>B</b></button>
+                    <button onclick="document.execCommand('italic')"><i>I</i></button>
+                    <button onclick="document.execCommand('underline')"><u>U</u></button>
+                    <button onclick="document.execCommand('insertUnorderedList')">• List</button>
+                </div>
+                <div id="editor" contenteditable="true" style="min-height:420px;"></div>
+            </div>
+
+            <div class="form-group">
+                <label>Attachments</label>
+                <input type="file" id="attachments" multiple>
+                <div id="attachmentsList" style="margin-top:8px;font-size:0.9rem;"></div>
+            </div>
+
+            <div style="text-align:center; margin-top:24px;">
+                <button onclick="sendEmail(false)" class="primary" style="font-size:1.1rem;padding:14px 40px;">
+                    <i class="fas fa-paper-plane"></i> Send
+                </button>
+            </div>
+
+            <div id="status" class="status" style="display:none;"></div>
         </div>
     </div>
 
@@ -203,15 +219,54 @@
             try {
                 await msalInstance.loginPopup({ scopes: ["Mail.Send", "User.Read", "Contacts.Read"] });
                 document.getElementById("emailForm").style.display = "block";
-                document.getElementById("loginBtn").style.display = "none";
-            } catch (e) { alert("Login failed."); }
+            } catch (e) { 
+                console.error(e);
+                alert("Login failed. Please try again."); 
+            }
         };
 
-        // Contacts functions (unchanged)
-        async function loadContacts() { /* ... same as before ... */ 
-            // (Copy from previous version if needed)
+        // ==================== CONTACTS (Improved) ====================
+        async function loadContacts() {
+            const status = document.getElementById("status");
+            status.style.display = "block";
+            status.textContent = "Loading contacts from Outlook...";
+            status.className = "status";
+
+            try {
+                const token = await msalInstance.acquireTokenSilent({ scopes: ["Contacts.Read"] });
+                const res = await fetch("https://graph.microsoft.com/v1.0/me/contacts?$top=500&$select=displayName,emailAddresses", {
+                    headers: { Authorization: `Bearer ${token.accessToken}` }
+                });
+
+                if (!res.ok) throw new Error("Failed to fetch contacts");
+
+                const data = await res.json();
+                allContacts = data.value || [];
+                
+                renderContacts();
+                status.textContent = `✅ Loaded ${allContacts.length} contacts`;
+                status.className = "status success";
+                setTimeout(() => status.style.display = "none", 2500);
+            } catch (err) {
+                console.error(err);
+                status.textContent = "❌ Could not load contacts. Make sure Contacts permission is granted.";
+                status.className = "status error";
+            }
         }
-        function renderContacts() { /* ... */ }
+
+        function renderContacts() {
+            const container = document.getElementById("contactsList");
+            container.innerHTML = allContacts.map(contact => `
+                <div style="padding:10px 12px;border-bottom:1px solid #eee;display:flex;align-items:center;gap:10px;">
+                    <input type="checkbox" class="contact-check" data-email="${contact.emailAddresses?.[0]?.address || ''}">
+                    <div>
+                        <strong>${contact.displayName || 'No Name'}</strong><br>
+                        <small style="color:#666;">${contact.emailAddresses?.[0]?.address || 'No email'}</small>
+                    </div>
+                </div>
+            `).join('');
+        }
+
         function toggleSelectAll(cb) { document.querySelectorAll('.contact-check').forEach(c => c.checked = cb.checked); }
         function selectAllContacts() { document.getElementById("selectAllMaster").checked = true; toggleSelectAll(document.getElementById("selectAllMaster")); }
         function clearSelection() { document.getElementById("selectAllMaster").checked = false; toggleSelectAll(document.getElementById("selectAllMaster")); }
@@ -219,20 +274,13 @@
             return Array.from(document.querySelectorAll('.contact-check:checked')).map(cb => cb.dataset.email).filter(Boolean);
         }
 
-        // Rich Text Preview
+        // ==================== RICH TEXT + SEND ====================
         function updatePreview() {
-            const editorContent = document.getElementById("editor").innerHTML;
-            document.getElementById("htmlPreview").innerHTML = editorContent || "<p style='color:#888;'>Preview will appear here...</p>";
+            const content = document.getElementById("editor").innerHTML;
+            document.getElementById("htmlPreview").innerHTML = content;
         }
 
         document.getElementById("editor").addEventListener("input", updatePreview);
-
-        // Attachments
-        document.getElementById("attachments").addEventListener("change", function(e) {
-            attachedFiles = Array.from(e.target.files);
-            const list = document.getElementById("attachmentsList");
-            list.innerHTML = attachedFiles.map(f => `<div>📎 ${f.name} (${(f.size/1024).toFixed(1)} KB)</div>`).join('');
-        });
 
         async function sendEmail(toAll = false) {
             const status = document.getElementById("status");
@@ -242,30 +290,25 @@
 
             try {
                 const tokenResponse = await msalInstance.acquireTokenSilent({ scopes: ["Mail.Send"] });
-
                 const subject = document.getElementById("subject").value || "Message from Mohammadia Center";
-                const bodyContent = document.getElementById("editor").innerHTML;
+                const bodyHtml = document.getElementById("editor").innerHTML;
 
-                // BCC Logic
                 let toRecipients = [{ emailAddress: { address: "info@mohammadia.org" } }];
                 let bccRecipients = [];
 
                 if (toAll || getSelectedEmails().length > 0) {
                     bccRecipients = toAll 
                         ? allContacts.map(c => ({ emailAddress: { address: c.emailAddresses?.[0]?.address } })).filter(r => r.emailAddress.address)
-                        : getSelectedEmails().map(email => ({ emailAddress: { address: email } }));
+                        : getSelectedEmails().map(e => ({ emailAddress: { address: e } }));
                 } else {
-                    const manualTo = document.getElementById("to").value.trim();
-                    if (manualTo) toRecipients = [{ emailAddress: { address: manualTo } }];
+                    const manual = document.getElementById("to").value.trim();
+                    if (manual) toRecipients = [{ emailAddress: { address: manual } }];
                 }
 
                 const emailData = {
                     message: {
                         subject: subject,
-                        body: {
-                            contentType: "HTML",
-                            content: bodyContent || "<p>No content</p>"
-                        },
+                        body: { contentType: "HTML", content: bodyHtml || "<p>No content</p>" },
                         toRecipients: toRecipients,
                         bccRecipients: bccRecipients.length ? bccRecipients : undefined
                     }
@@ -284,10 +327,11 @@
                 });
 
                 if (response.ok) {
-                    status.textContent = `✅ Email sent successfully!`;
+                    status.textContent = `✅ Sent successfully!`;
                     status.className = "status success";
                 } else throw new Error();
             } catch (err) {
+                console.error(err);
                 status.textContent = "❌ Failed to send email.";
                 status.className = "status error";
             }
@@ -295,7 +339,7 @@
 
         function sendToAllContacts() {
             if (allContacts.length === 0) return alert("Please load contacts first.");
-            if (confirm(`Send to all ${allContacts.length} contacts?`)) sendEmail(true);
+            if (confirm(`Send to all ${allContacts.length} contacts as BCC?`)) sendEmail(true);
         }
     </script>
 </body>
