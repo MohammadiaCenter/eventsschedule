@@ -14,12 +14,13 @@
     </div>
 
     <script>
-        const msalConfig = {
-            auth: {
-                clientId: "YOUR_CLIENT_ID",
-                authority: "https://login.microsoftonline.com/common"
-            }
-        };
+const msalConfig = {
+    auth: {
+        clientId: "YOUR_APPLICATION_CLIENT_ID_HERE", // Copy this from your App Overview page
+        authority: "https://login.microsoftonline.com/common",
+        redirectUri: "https://mohammadiacenter.github.io/eventsschedule/email.html" 
+    }
+};
         const msalInstance = new msal.PublicClientApplication(msalConfig);
 
         document.getElementById("loginBtn").onclick = async () => {
