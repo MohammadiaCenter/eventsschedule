@@ -42,7 +42,6 @@
         button { background: var(--primary); color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; }
         .preview-btn { background: var(--accent); color: #1a2521; font-weight: 600; }
 
-        /* Contacts Styling */
         .contacts-section { border: 2px solid #e5e7eb; border-radius: 12px; padding: 15px; background: #fafcfc; }
         .contacts-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid #eee; }
         .contacts-list { max-height: 420px; overflow-y: auto; }
@@ -65,7 +64,6 @@
     </style>
 </head>
 <body>
-    <!-- Header and layout same as before -->
     <header class="header">
         <div style="max-width:1200px;margin:0 auto;padding:0 2rem;display:flex;align-items:center;justify-content:space-between;">
             <div style="display:flex;align-items:center;gap:12px;font-size:1.5rem;font-weight:700;">
@@ -89,7 +87,7 @@
 
                 <div id="emailForm" style="display:none; margin-top:2rem;">
                     <div class="form-grid">
-                        <!-- Left Column (Contacts) - unchanged -->
+                        <!-- Left Column -->
                         <div>
                             <div class="form-group">
                                 <label>Manual To (Optional)</label>
@@ -225,9 +223,40 @@
             } catch (e) { alert("Login failed."); }
         };
 
-        // Contacts functions (loadContacts, renderContacts, etc.) - same as before
-        async function loadContacts() { /* ... same as previous version ... */ }
-        function renderContacts() { /* ... same ... */ }
+        // === Contacts Functions ===
+        async function loadContacts() {
+            const status = document.getElementById("status");
+            status.style.display = "block";
+            status.textContent = "Loading contacts...";
+            try {
+                const token = await msalInstance.acquireTokenSilent({ scopes: ["Contacts.Read"] });
+                const res = await fetch("https://graph.microsoft.com/v1.0/me/contacts?$top=200&$select=displayName,emailAddresses", {
+                    headers: { Authorization: `Bearer ${token.accessToken}` }
+                });
+                const data = await res.json();
+                allContacts = data.value || [];
+                renderContacts();
+                status.style.display = "none";
+            } catch (err) {
+                status.textContent = "❌ Could not load contacts.";
+                status.className = "status error";
+            }
+        }
+
+        function renderContacts() {
+            const container = document.getElementById("contactsList");
+            container.innerHTML = allContacts.map(contact => `
+                <div class="contact-item">
+                    <input type="checkbox" class="contact-check" data-email="${contact.emailAddresses?.[0]?.address || ''}">
+                    <div>
+                        <strong>${contact.displayName || 'Unnamed'}</strong><br>
+                        <small>${contact.emailAddresses?.[0]?.address || 'No email'}</small>
+                    </div>
+                </div>
+            `).join('');
+            document.getElementById("count").textContent = `${allContacts.length} contacts`;
+        }
+
         function toggleSelectAll(cb) { document.querySelectorAll('.contact-check').forEach(c => c.checked = cb.checked); }
         function selectAllContacts() { document.getElementById("selectAllMaster").checked = true; toggleSelectAll(document.getElementById("selectAllMaster")); }
         function clearSelection() { document.getElementById("selectAllMaster").checked = false; toggleSelectAll(document.getElementById("selectAllMaster")); }
@@ -248,11 +277,11 @@
             let htmlContent = '';
 
             if (templateKey === "plain") {
-                htmlContent = nl2br(customMsg) || '<p style="color:#888; font-style:italic;">Your custom message will appear here...</p>';
+                htmlContent = nl2br(customMsg) || '<p style="color:#888;">Your message will appear here...</p>';
             } else {
                 const userMessage = customMsg 
-                    ? `<p style="margin:20px 0;">${nl2br(customMsg)}</p>` 
-                    : `<p style="margin:20px 0; color:#888; font-style:italic;">Your custom message will appear here...</p>`;
+                    ? `<br><p style="margin: 25px 0 25px 0;">${nl2br(customMsg)}</p><br>` 
+                    : `<br><p style="margin: 25px 0 25px 0; color:#888; font-style:italic;">[Your custom message will appear here]</p><br>`;
 
                 htmlContent = tmpl.header + userMessage + tmpl.footer;
             }
@@ -261,7 +290,6 @@
         }
 
         async function sendEmail(toAll = false) {
-            // Same send logic as previous version
             const status = document.getElementById("status");
             status.style.display = "block";
             status.textContent = "Sending...";
@@ -273,9 +301,16 @@
                 const customBody = document.getElementById("body").value.trim();
                 const tmpl = templates[templateKey];
 
-                let finalHtml = templateKey === "plain" 
-                    ? nl2br(customBody)
-                    : tmpl.header + (customBody ? `<p style="margin:20px 0;">${nl2br(customBody)}</p>` : '') + tmpl.footer;
+                let finalHtml = '';
+
+                if (templateKey === "plain") {
+                    finalHtml = nl2br(customBody);
+                } else {
+                    const messagePart = customBody 
+                        ? `<br><p style="margin: 25px 0 25px 0;">${nl2br(customBody)}</p><br>` 
+                        : '';
+                    finalHtml = tmpl.header + messagePart + tmpl.footer;
+                }
 
                 let recipients = toAll 
                     ? allContacts.map(c => c.emailAddresses?.[0]?.address).filter(Boolean)
@@ -301,7 +336,7 @@
                 });
 
                 if (response.ok) {
-                    status.textContent = `✅ Sent to ${recipients.length} recipient(s)!`;
+                    status.textContent = `✅ Sent successfully to ${recipients.length} recipient(s)!`;
                     status.className = "status success";
                 } else throw new Error();
             } catch (err) {
@@ -312,7 +347,7 @@
 
         function sendToAllContacts() {
             if (allContacts.length === 0) return alert("Please load contacts first.");
-            if (confirm(`Send email to all ${allContacts.length} contacts?`)) sendEmail(true);
+            if (confirm(`Send to all ${allContacts.length} contacts?`)) sendEmail(true);
         }
 
         // Auto preview
