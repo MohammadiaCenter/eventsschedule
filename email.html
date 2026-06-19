@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Email Sender App</title>
+    <script src="https://alcdn.msauth.net/browser/2.35.0/js/msal-browser.min.js"></script>
+</head>
+<body>
+    <button id="loginBtn">Login</button>
+    <div id="emailForm" style="display:none;">
+        <input id="to" placeholder="Recipient Email" />
+        <input id="subject" placeholder="Subject" />
+        <textarea id="body" placeholder="Message"></textarea>
+        <button id="sendBtn">Send Email</button>
+    </div>
+
+    <script>
+        const msalConfig = {
+            auth: {
+                clientId: "YOUR_CLIENT_ID",
+                authority: "https://login.microsoftonline.com/common"
+            }
+        };
+        const msalInstance = new msal.PublicClientApplication(msalConfig);
+
+        document.getElementById("loginBtn").onclick = async () => {
+            const response = await msalInstance.loginPopup({ scopes: ["Mail.Send"] });
+            document.getElementById("emailForm").style.display = "block";
+        };
+
+        document.getElementById("sendBtn").onclick = async () => {
+            const tokenResponse = await msalInstance.acquireTokenSilent({ scopes: ["Mail.Send"] });
+            const emailData = {
+                message: {
+                    subject: document.getElementById("subject").value,
+                    body: { contentType: "Text", content: document.getElementById("body").value },
+                    toRecipients: [{ emailAddress: { address: document.getElementById("to").value } }]
+                }
+            };
+
+            await fetch("https://graph.microsoft.com/v1.0/me/sendMail", {
+                method: "POST",
+                headers: { 
+                    Authorization: `Bearer ${tokenResponse.accessToken}`,
+                    "Content-Type": "application/json" 
+                },
+                body: JSON.stringify(emailData)
+            });
+            alert("Email sent!");
+        };
+    </script>
+</body>
+</html>
