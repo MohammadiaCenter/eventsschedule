@@ -14,39 +14,63 @@
     </div>
 
     <script>
-const msalConfig = {
-    auth: {
-        clientId: "de2ead7b-e1f3-4075-8140-8db0e317ecad", // Copy this from your App Overview page
-        authority: "https://login.microsoftonline.com/165d4bba-ab23-41e4-bafc-d15a2f8ab1c6",
-        redirectUri: "https://mohammadiacenter.github.io/eventsschedule/email.html" 
-    }
-};
+        const msalConfig = {
+            auth: {
+                clientId: "de2ead7b-e1f3-4075-8140-8db0e317ecad",
+                authority: "https://login.microsoftonline.com/165d4bba-ab23-41e4-bafc-d15a2f8ab1c6",
+                redirectUri: "https://mohammadiacenter.github.io/eventsschedule/email.html" 
+            }
+        };
         const msalInstance = new msal.PublicClientApplication(msalConfig);
 
-        document.getElementById("loginBtn").onclick = async () => {
-            const response = await msalInstance.loginPopup({ scopes: ["Mail.Send"] });
-            document.getElementById("emailForm").style.display = "block";
+        // Handle the return from loginRedirect
+        msalInstance.handleRedirectPromise().then((tokenResponse) => {
+            if (tokenResponse !== null) {
+                msalInstance.setActiveAccount(tokenResponse.account);
+                document.getElementById("emailForm").style.display = "block";
+            } else {
+                const currentAccount = msalInstance.getAllAccounts()[0];
+                if (currentAccount) {
+                    msalInstance.setActiveAccount(currentAccount);
+                    document.getElementById("emailForm").style.display = "block";
+                }
+            }
+        }).catch(error => {
+            console.error(error);
+        });
+
+        document.getElementById("loginBtn").onclick = () => {
+            msalInstance.loginRedirect({ scopes: ["Mail.Send"] });
         };
 
         document.getElementById("sendBtn").onclick = async () => {
-            const tokenResponse = await msalInstance.acquireTokenSilent({ scopes: ["Mail.Send"] });
-            const emailData = {
-                message: {
-                    subject: document.getElementById("subject").value,
-                    body: { contentType: "Text", content: document.getElementById("body").value },
-                    toRecipients: [{ emailAddress: { address: document.getElementById("to").value } }]
-                }
-            };
+            try {
+                const tokenResponse = await msalInstance.acquireTokenSilent({ 
+                    scopes: ["Mail.Send"],
+                    account: msalInstance.getActiveAccount()
+                });
 
-            await fetch("https://graph.microsoft.com/v1.0/me/sendMail", {
-                method: "POST",
-                headers: { 
-                    Authorization: `Bearer ${tokenResponse.accessToken}`,
-                    "Content-Type": "application/json" 
-                },
-                body: JSON.stringify(emailData)
-            });
-            alert("Email sent!");
+                const emailData = {
+                    message: {
+                        subject: document.getElementById("subject").value,
+                        body: { contentType: "Text", content: document.getElementById("body").value },
+                        toRecipients: [{ emailAddress: { address: document.getElementById("to").value } }]
+                    }
+                };
+
+                await fetch("https://graph.microsoft.com/v1.0/me/sendMail", {
+                    method: "POST",
+                    headers: { 
+                        Authorization: `Bearer ${tokenResponse.accessToken}`,
+                        "Content-Type": "application/json" 
+                    },
+                    body: JSON.stringify(emailData)
+                });
+                alert("Email sent!");
+            } catch (error) {
+                console.error("Failed to send email:", error);
+                alert("Error sending email. Check console for details.");
+            }
         };
     </script>
 </body>
