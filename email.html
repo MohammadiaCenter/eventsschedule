@@ -2,70 +2,464 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Mohammadia Official Messenger</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mohammadia Center | Professional Email System</title>
+    <script src="https://alcdn.msauth.net/browser/2.35.0/js/msal-browser.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <style>
-        body { font-family: sans-serif; padding: 20px; background: #f4f4f4; }
-        .container { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        input, textarea, select { width: 100%; margin-bottom: 15px; padding: 10px; box-sizing: border-box; }
-        button { background: #0056b3; color: white; border: none; padding: 10px 20px; cursor: pointer; border-radius: 4px; }
-        /* Style for the preview area */
-        #emailPreview { margin-top: 20px; border-top: 2px solid #ddd; padding-top: 20px; }
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@400;500;600&display=swap');
+
+        :root {
+            --primary: #0B5B4A;     /* Deep Islamic Green */
+            --accent: #D4AF37;      /* Gold */
+            --dark: #1a2521;
+            --light: #f8f9f7;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: linear-gradient(135deg, #f8f9f7 0%, #e8edeb 100%);
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .header {
+            background: var(--primary);
+            color: white;
+            padding: 1.5rem 0;
+            box-shadow: 0 4px 12px rgba(11, 91, 74, 0.3);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            font-family: 'Playfair Display', serif;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            border: 1px solid #e5e7eb;
+        }
+
+        .card-header {
+            background: linear-gradient(90deg, var(--primary), #0f6b57);
+            color: white;
+            padding: 1.75rem 2rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .main-content {
+            padding: 2.5rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(11, 91, 74, 0.15);
+        }
+
+        .templates-dropdown {
+            position: relative;
+        }
+
+        .preview-btn {
+            background: var(--accent);
+            color: var(--dark);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .preview-btn:hover {
+            background: #c19a2f;
+            transform: translateY(-2px);
+        }
+
+        .email-preview {
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 20px;
+            background: white;
+            margin-top: 1rem;
+            min-height: 200px;
+            overflow-y: auto;
+            font-size: 0.95rem;
+        }
+
+        button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 14px 32px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        button:hover {
+            background: #0a4f40;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(11, 91, 74, 0.3);
+        }
+
+        .status {
+            margin-top: 1rem;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+
+        .template-select {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
     </style>
 </head>
 <body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <i class="fas fa-mosque"></i>
+                <span>Mohammadia Center</span>
+            </div>
+            <div>
+                <h1 style="font-size: 1.4rem; font-family: 'Playfair Display', serif;">Professional Email System</h1>
+            </div>
+        </div>
+    </header>
 
-<div class="container">
-    <h2>Official Communication Portal</h2>
-    <input id="to" placeholder="Recipient Email" />
-    <input id="subject" placeholder="Subject" />
-    
-    <select id="templateSelector">
-        <option value="default">General Announcement</option>
-        <option value="event">Event Invitation</option>
-    </select>
+    <div class="container">
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-envelope" style="font-size: 1.8rem;"></i>
+                <div>
+                    <h2>Send Professional Communications</h2>
+                    <p style="opacity: 0.9;">Official Mohammadia Center Email Platform</p>
+                </div>
+            </div>
 
-    <textarea id="body" rows="6" placeholder="Message content..."></textarea>
-    <button id="sendBtn">Send Official Email</button>
-</div>
+            <div class="main-content">
+                <button id="loginBtn" style="font-size: 1.1rem; padding: 16px 40px;">
+                    <i class="fas fa-sign-in-alt"></i> Sign in with Microsoft
+                </button>
 
-<script src="https://alcdn.msauth.net/browser/2.35.0/js/msal-browser.min.js"></script>
-<script>
-    // Configuration remains the same
-    const msalConfig = { /* ... your config ... */ };
-    const msalInstance = new msal.PublicClientApplication(msalConfig);
+                <div id="emailForm" style="display:none; margin-top: 2rem;">
+                    <div class="form-grid">
+                        <!-- Left Column -->
+                        <div>
+                            <div class="form-group">
+                                <label>To</label>
+                                <input type="email" id="to" placeholder="recipient@example.com" required>
+                            </div>
 
-    // Template Definitions
-    const templates = {
-        default: (content) => `
-            <div style="font-family: Arial; color: #333;">
-                <div style="background: #0056b3; color: white; padding: 20px;"><h1>Mohammadia</h1></div>
-                <div style="padding: 20px;">${content}</div>
-                <div style="background: #eee; padding: 10px; font-size: 12px;">© Mohammadia Center | Official Communication</div>
-            </div>`,
-        event: (content) => `
-            <div style="font-family: Arial; border: 2px solid #0056b3;">
-                <div style="padding: 20px; text-align: center;"><h2>Event Invitation</h2></div>
-                <div style="padding: 20px;">${content}</div>
-            </div>`
-    };
+                            <div class="form-group">
+                                <label>CC</label>
+                                <input type="email" id="cc" placeholder="cc@example.com (optional)">
+                            </div>
 
-    document.getElementById("sendBtn").onclick = async () => {
-        const rawContent = document.getElementById("body").value;
-        const type = document.getElementById("templateSelector").value;
-        
-        // Wrap content in the selected template
-        const finalHtml = templates[type](rawContent);
+                            <div class="form-group">
+                                <label>Subject</label>
+                                <input type="text" id="subject" placeholder="Official Communication from Mohammadia Center" required>
+                            </div>
 
-        const emailData = {
-            message: {
-                subject: document.getElementById("subject").value,
-                body: { contentType: "HTML", content: finalHtml },
-                toRecipients: [{ emailAddress: { address: document.getElementById("to").value } }]
+                            <div class="form-group">
+                                <label>Email Template</label>
+                                <div class="template-select">
+                                    <select id="templateSelect" style="flex: 1;">
+                                        <option value="plain">Custom Message</option>
+                                        <option value="announcement">Event Announcement</option>
+                                        <option value="newsletter">Monthly Newsletter</option>
+                                        <option value="reminder">Prayer / Event Reminder</option>
+                                        <option value="donation">Donation Appeal</option>
+                                        <option value="thankyou">Thank You Note</option>
+                                    </select>
+                                    <button class="preview-btn" onclick="previewTemplate()">
+                                        <i class="fas fa-eye"></i> Preview
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right Column - Body -->
+                        <div>
+                            <div class="form-group">
+                                <label>Message Body</label>
+                                <textarea id="body" rows="18" placeholder="Write your message here..." style="resize: vertical;"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label>HTML Email Preview</label>
+                                <div id="htmlPreview" class="email-preview">
+                                    Select a template and click Preview to see styled version.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="text-align: center; margin-top: 2rem;">
+                        <button id="sendBtn" style="font-size: 1.2rem;">
+                            <i class="fas fa-paper-plane"></i> Send Professional Email
+                        </button>
+                    </div>
+
+                    <div id="status" class="status" style="display:none;"></div>
+                </div>
+            </div>
+        </div>
+
+        <p style="text-align: center; margin-top: 2rem; color: #666; font-size: 0.9rem;">
+            Powered by Microsoft Graph • Official Mohammadia Center Communications
+        </p>
+    </div>
+
+    <script>
+        const msalConfig = {
+            auth: {
+                clientId: "de2ead7b-e1f3-4075-8140-8db0e317ecad",
+                authority: "https://login.microsoftonline.com/165d4bba-ab23-41e4-bafc-d15a2f8ab1c6",
+                redirectUri: "https://mohammadiacenter.github.io/eventsschedule/email.html"
             }
         };
 
-        // ... Fetch request to Microsoft Graph (same as before) ...
-    };
-</script>
+        const msalInstance = new msal.PublicClientApplication(msalConfig);
+
+        // Built-in HTML Templates
+        const templates = {
+            plain: {
+                subject: "Message from Mohammadia Center",
+                body: "<p>Assalamu Alaikum,</p><p>Dear Community Member,</p><p>[Your message here]</p><p>Best regards,<br><strong>Mohammadia Center of Virginia</strong></p>"
+            },
+            announcement: {
+                subject: "Important Announcement: [Event Name]",
+                body: `
+                    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
+                        <h2 style="color: #0B5B4A; text-align: center;">🌟 Important Announcement</h2>
+                        <p>Assalamu Alaikum wa Rahmatullahi wa Barakatuh,</p>
+                        <p>Dear Brothers and Sisters,</p>
+                        <p>We are pleased to announce <strong>[Event Details]</strong>.</p>
+                        <div style="background: #f0f8f5; padding: 15px; border-radius: 6px; margin: 20px 0;">
+                            <strong>Date:</strong> [Date]<br>
+                            <strong>Time:</strong> [Time]<br>
+                            <strong>Location:</strong> Mohammadia Center
+                        </div>
+                        <p>JazakAllah khair for your continued support.</p>
+                        <p>Best regards,<br><strong>Mohammadia Center Team</strong></p>
+                    </div>
+                `
+            },
+            newsletter: {
+                subject: "Mohammadia Center Monthly Update",
+                body: `
+                    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                        <h1 style="color: #0B5B4A; text-align: center;">Mohammadia Center Newsletter</h1>
+                        <p>Assalamu Alaikum,</p>
+                        <h3>Recent Highlights</h3>
+                        <ul>
+                            <li>[Update 1]</li>
+                            <li>[Update 2]</li>
+                        </ul>
+                        <p style="text-align: center; margin-top: 30px;">
+                            <strong>May Allah (SWT) reward all who support our community.</strong>
+                        </p>
+                    </div>
+                `
+            },
+            reminder: {
+                subject: "Reminder: [Event Name]",
+                body: `
+                    <div style="background: linear-gradient(#0B5B4A, #0f6b57); color: white; padding: 30px; text-align: center; border-radius: 12px;">
+                        <h2>🕌 Prayer / Event Reminder</h2>
+                        <p><strong>[Event Title]</strong></p>
+                        <p>Date: [Date] | Time: [Time]</p>
+                        <p>Please make every effort to attend.</p>
+                    </div>
+                `
+            },
+            donation: {
+                subject: "Support the New Masjid Project - Mohammadia Center",
+                body: `
+                    <div style="text-align: center; padding: 20px;">
+                        <h2 style="color: #D4AF37;">🤲 Your Support Makes a Difference</h2>
+                        <p>Help us complete the new Imam Bargah and Masjid.</p>
+                        <a href="https://mohammadia.org/building-our-future/" style="background:#0B5B4A; color:white; padding:12px 30px; text-decoration:none; border-radius:8px; display:inline-block; margin:20px 0;">
+                            Donate Now
+                        </a>
+                    </div>
+                `
+            },
+            thankyou: {
+                subject: "Thank You for Your Generous Support",
+                body: `
+                    <p>JazakAllah khair for your contribution to the Mohammadia Center.</p>
+                    <p>Your support helps us serve the community and complete our building project.</p>
+                    <p>May Allah (SWT) accept your efforts and reward you abundantly.</p>
+                `
+            }
+        };
+
+        document.getElementById("loginBtn").onclick = async () => {
+            try {
+                const response = await msalInstance.loginPopup({ 
+                    scopes: ["Mail.Send", "User.Read"] 
+                });
+                console.log("Logged in:", response);
+                document.getElementById("emailForm").style.display = "block";
+                document.getElementById("loginBtn").style.display = "none";
+            } catch (error) {
+                console.error(error);
+                alert("Login failed. Please try again.");
+            }
+        };
+
+        function previewTemplate() {
+            const templateKey = document.getElementById("templateSelect").value;
+            const previewDiv = document.getElementById("htmlPreview");
+            
+            if (templates[templateKey]) {
+                previewDiv.innerHTML = templates[templateKey].body;
+                // Auto-fill subject
+                if (templates[templateKey].subject) {
+                    document.getElementById("subject").value = templates[templateKey].subject;
+                }
+            }
+        }
+
+        document.getElementById("sendBtn").onclick = async () => {
+            const statusEl = document.getElementById("status");
+            statusEl.style.display = "block";
+            statusEl.textContent = "Sending...";
+            statusEl.className = "status";
+
+            try {
+                const tokenResponse = await msalInstance.acquireTokenSilent({ 
+                    scopes: ["Mail.Send"] 
+                });
+
+                const to = document.getElementById("to").value;
+                const cc = document.getElementById("cc").value;
+                const subject = document.getElementById("subject").value;
+                let bodyContent = document.getElementById("body").value;
+
+                // Use HTML if template was selected
+                const templateKey = document.getElementById("templateSelect").value;
+                const isHtml = templateKey !== "plain";
+
+                const emailData = {
+                    message: {
+                        subject: subject,
+                        body: {
+                            contentType: isHtml ? "HTML" : "Text",
+                            content: isHtml ? templates[templateKey].body : bodyContent
+                        },
+                        toRecipients: [{ emailAddress: { address: to } }]
+                    }
+                };
+
+                if (cc) {
+                    emailData.message.ccRecipients = [{ emailAddress: { address: cc } }];
+                }
+
+                const response = await fetch("https://graph.microsoft.com/v1.0/me/sendMail", {
+                    method: "POST",
+                    headers: {
+                        Authorization: `Bearer ${tokenResponse.accessToken}`,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(emailData)
+                });
+
+                if (response.ok) {
+                    statusEl.textContent = "✅ Email sent successfully!";
+                    statusEl.className = "status success";
+                    // Clear form
+                    setTimeout(() => {
+                        document.getElementById("body").value = "";
+                        statusEl.style.display = "none";
+                    }, 3000);
+                } else {
+                    throw new Error("Failed to send");
+                }
+            } catch (error) {
+                console.error(error);
+                statusEl.textContent = "❌ Failed to send email. Please try again.";
+                statusEl.className = "status error";
+            }
+        };
+
+        // Keyboard shortcut
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.key === 'Enter') {
+                document.getElementById("sendBtn").click();
+            }
+        });
+    </script>
 </body>
 </html>
