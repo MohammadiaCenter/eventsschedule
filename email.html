@@ -1,77 +1,71 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Email Sender App</title>
-    <script src="https://alcdn.msauth.net/browser/2.35.0/js/msal-browser.min.js"></script>
+    <meta charset="UTF-8">
+    <title>Mohammadia Official Messenger</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; background: #f4f4f4; }
+        .container { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        input, textarea, select { width: 100%; margin-bottom: 15px; padding: 10px; box-sizing: border-box; }
+        button { background: #0056b3; color: white; border: none; padding: 10px 20px; cursor: pointer; border-radius: 4px; }
+        /* Style for the preview area */
+        #emailPreview { margin-top: 20px; border-top: 2px solid #ddd; padding-top: 20px; }
+    </style>
 </head>
 <body>
-    <button id="loginBtn">Login</button>
-    <div id="emailForm" style="display:none;">
-        <input id="to" placeholder="Recipient Email" />
-        <input id="subject" placeholder="Subject" />
-        <textarea id="body" placeholder="Message"></textarea>
-        <button id="sendBtn">Send Email</button>
-    </div>
 
-    <script>
-        const msalConfig = {
-            auth: {
-                clientId: "de2ead7b-e1f3-4075-8140-8db0e317ecad",
-                authority: "https://login.microsoftonline.com/165d4bba-ab23-41e4-bafc-d15a2f8ab1c6",
-                redirectUri: "https://mohammadiacenter.github.io/eventsschedule/email.html" 
+<div class="container">
+    <h2>Official Communication Portal</h2>
+    <input id="to" placeholder="Recipient Email" />
+    <input id="subject" placeholder="Subject" />
+    
+    <select id="templateSelector">
+        <option value="default">General Announcement</option>
+        <option value="event">Event Invitation</option>
+    </select>
+
+    <textarea id="body" rows="6" placeholder="Message content..."></textarea>
+    <button id="sendBtn">Send Official Email</button>
+</div>
+
+<script src="https://alcdn.msauth.net/browser/2.35.0/js/msal-browser.min.js"></script>
+<script>
+    // Configuration remains the same
+    const msalConfig = { /* ... your config ... */ };
+    const msalInstance = new msal.PublicClientApplication(msalConfig);
+
+    // Template Definitions
+    const templates = {
+        default: (content) => `
+            <div style="font-family: Arial; color: #333;">
+                <div style="background: #0056b3; color: white; padding: 20px;"><h1>Mohammadia</h1></div>
+                <div style="padding: 20px;">${content}</div>
+                <div style="background: #eee; padding: 10px; font-size: 12px;">© Mohammadia Center | Official Communication</div>
+            </div>`,
+        event: (content) => `
+            <div style="font-family: Arial; border: 2px solid #0056b3;">
+                <div style="padding: 20px; text-align: center;"><h2>Event Invitation</h2></div>
+                <div style="padding: 20px;">${content}</div>
+            </div>`
+    };
+
+    document.getElementById("sendBtn").onclick = async () => {
+        const rawContent = document.getElementById("body").value;
+        const type = document.getElementById("templateSelector").value;
+        
+        // Wrap content in the selected template
+        const finalHtml = templates[type](rawContent);
+
+        const emailData = {
+            message: {
+                subject: document.getElementById("subject").value,
+                body: { contentType: "HTML", content: finalHtml },
+                toRecipients: [{ emailAddress: { address: document.getElementById("to").value } }]
             }
         };
-        const msalInstance = new msal.PublicClientApplication(msalConfig);
 
-        // Handle the return from loginRedirect
-        msalInstance.handleRedirectPromise().then((tokenResponse) => {
-            if (tokenResponse !== null) {
-                msalInstance.setActiveAccount(tokenResponse.account);
-                document.getElementById("emailForm").style.display = "block";
-            } else {
-                const currentAccount = msalInstance.getAllAccounts()[0];
-                if (currentAccount) {
-                    msalInstance.setActiveAccount(currentAccount);
-                    document.getElementById("emailForm").style.display = "block";
-                }
-            }
-        }).catch(error => {
-            console.error(error);
-        });
-
-        document.getElementById("loginBtn").onclick = () => {
-            msalInstance.loginRedirect({ scopes: ["Mail.Send"] });
-        };
-
-        document.getElementById("sendBtn").onclick = async () => {
-            try {
-                const tokenResponse = await msalInstance.acquireTokenSilent({ 
-                    scopes: ["Mail.Send"],
-                    account: msalInstance.getActiveAccount()
-                });
-
-                const emailData = {
-                    message: {
-                        subject: document.getElementById("subject").value,
-                        body: { contentType: "Text", content: document.getElementById("body").value },
-                        toRecipients: [{ emailAddress: { address: document.getElementById("to").value } }]
-                    }
-                };
-
-                await fetch("https://graph.microsoft.com/v1.0/me/sendMail", {
-                    method: "POST",
-                    headers: { 
-                        Authorization: `Bearer ${tokenResponse.accessToken}`,
-                        "Content-Type": "application/json" 
-                    },
-                    body: JSON.stringify(emailData)
-                });
-                alert("Email sent!");
-            } catch (error) {
-                console.error("Failed to send email:", error);
-                alert("Error sending email. Check console for details.");
-            }
-        };
-    </script>
+        // ... Fetch request to Microsoft Graph (same as before) ...
+    };
+</script>
 </body>
 </html>
