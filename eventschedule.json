@@ -1,16 +1,6 @@
 {
   "schedule": [
     {
-      "type": "Ladies",
-      "islamic_date": "9th Rabi Ul Awwal",
-      "georgian_date": "TBD",
-      "time": "TBD",
-      "event": "Ladies - Eid e Zahra (AS)",
-      "maulana": "TBD",
-      "sponsors": "Naz Sisters",
-      "address": "7900 Backlick Rd, Springfield, VA 22150"
-    },
-    {
       "type": "Men",
       "islamic_date": "30 Zil Hijjah",
       "georgian_date": "Monday, June 15",
