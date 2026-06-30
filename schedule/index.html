@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mohammadia Center - Live Schedule</title>
+    <style>
+        :root {
+            --primary-emerald: #064e3b;
+            --accent-gold: #b45309;
+            --badge-bg-ladies: #fdf2f8;
+            --badge-text-ladies: #9d174d;
+            --badge-bg-general: #f0fdf4;
+            --badge-text-general: #166534;
+            --text-dark: #0f172a;
+            --text-slate: #475569;
+            --border-light: #e2e8f0;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        body { background-color: #f8fafc; color: var(--text-dark); }
+        .container { max-width: 650px; margin: 0 auto; }
+
+        .controls-sticky {
+            background: white; padding: 14px; border-radius: 16px; box-shadow: 0 4px 15px -3px rgba(0,0,0,0.05);
+            margin-bottom: 24px; border: 1px solid var(--border-light); position: sticky; top: 0; z-index: 100;
+        }
+        .search-box {
+            width: 100%; padding: 12px 16px; border: 2px solid var(--border-light);
+            border-radius: 10px; font-size: 0.95rem; outline: none; margin-bottom: 12px;
+        }
+        .search-box:focus { border-color: var(--primary-emerald); }
+
+        .tabs-container { display: flex; gap: 8px; margin-bottom: 12px; }
+        .filter-btn {
+            flex: 1; padding: 10px 8px; border: none; border-radius: 8px; font-size: 0.85rem;
+            font-weight: 600; cursor: pointer; background-color: #f1f5f9; color: var(--text-slate);
+            text-align: center;
+        }
+        .filter-btn.active { background-color: var(--primary-emerald); color: white; }
+
+        .filters-row {
+            display: flex; gap: 8px; margin-bottom: 16px;
+        }
+        .filter-select {
+            flex: 1; padding: 10px; border: 2px solid var(--border-light);
+            border-radius: 8px; font-size: 0.9rem !important; outline: none;
+        }
+        .filter-select:focus { border-color: var(--primary-emerald); }
+
+        .sponsor-btn {
+            background: #fefce8;
+            color: #854d0e;
+            border: 2px solid #facc15;
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-weight: 700;
+            text-align: center;
+            cursor: pointer;
+            margin-bottom: 16px;
+            transition: all 0.2s;
+        }
+        .sponsor-btn:hover {
+            background: #fef3c7;
+            transform: scale(1.02);
+        }
+
+        /* Fixed & Scaled Modal Layout for WordPress Theme Layering */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 999999 !important;
+            align-items: flex-start;
+            justify-content: center;
+            padding-top: 140px;
+            padding-bottom: 30px;
+        }
+        .modal-content {
+            background: white;
+            max-width: 500px;
+            width: 88%;
+            border-radius: 16px;
+            max-height: 70vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        .modal-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            background: white;
+            z-index: 10;
+        }
+        .modal-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #854d0e;
+        }
+        .close-btn {
+            font-size: 1.8rem;
+            cursor: pointer;
+            color: #64748b;
+        }
+        .modal-body {
+            padding: 16px 20px;
+        }
+
+        .events-feed { display: flex; flex-direction: column; gap: 20px; }
+
+        .event-card {
+            background: white; border-radius: 14px; padding: 16px; border: 1px solid var(--border-light);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02); position: relative; 
+            overflow: visible; 
+            transition: all 0.3s;
+        }
+        .event-card::before {
+            content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 5px;
+            background-color: var(--primary-emerald);
+            border-top-left-radius: 13px;
+            border-bottom-left-radius: 13px;
+        }
+        .event-card.ladies-card::before { background-color: var(--badge-text-ladies); }
+
+        /* Smooth Breathing Ambient Glow for Cards */
+        @keyframes blinkGreen {
+            0%, 100% { box-shadow: 0 2px 5px rgba(0,0,0,0.02), 0 0 0 3px rgba(16, 185, 129, 0.24); }
+            50% { box-shadow: 0 2px 5px rgba(0,0,0,0.02), 0 0 0 8px rgba(16, 185, 129, 0.45); }
+        }
+        @keyframes blinkRed {
+            0%, 100% { box-shadow: 0 2px 5px rgba(0,0,0,0.02), 0 0 0 3px rgba(239, 68, 68, 0.2); }
+            50% { box-shadow: 0 2px 5px rgba(0,0,0,0.02), 0 0 0 7px rgba(239, 68, 68, 0.35); }
+        }
+
+        .event-card.today { border-color: #10b981; animation: blinkGreen 2s infinite; }
+        .event-card.past { border-color: #ef4444; opacity: 0.95; animation: blinkRed 2.5s infinite; }
+
+        .card-top { 
+            display: flex; 
+            justify-content: flex-start; 
+            align-items: center; 
+            margin-bottom: 14px; 
+            flex-wrap: wrap; 
+            gap: 8px; 
+            padding-right: 24px; 
+        }
+        .date-badges {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .date-badge { 
+            font-size: 0.8rem; 
+            font-weight: 700; 
+            padding: 6px 6px; 
+            border-radius: 20px; 
+            white-space: nowrap; 
+        }
+        .general-badge { background-color: var(--badge-bg-general); color: var(--badge-text-general); }
+        .ladies-badge { background-color: var(--badge-bg-ladies); color: var(--badge-text-ladies); }
+
+        /* Outer Border Edge Badges (Static) */
+        .status-tag {
+            position: absolute;
+            top: -10px; 
+            right: -6px; 
+            font-size: 0.72rem;
+            font-weight: 800;
+            padding: 4px 12px;
+            border-radius: 30px; 
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            z-index: 10;
+            border: 2px solid white; 
+            box-shadow: 0 3px 8px rgba(0,0,0,0.12);
+        }
+        .today-tag { background: #10b981; color: white; }
+        .past-tag { background: #ef4444; color: white; }
+
+        .event-title { font-size: 1.15rem; font-weight: 700; line-height: 1.4; margin-bottom: 12px; color: #022c22; }
+
+        .meta-grid {
+            border-top: 1px dashed var(--border-light); padding-top: 10px;
+            display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 0.85rem;
+        }
+        .meta-item { display: flex; flex-direction: column; }
+        .meta-label { font-size: 0.72rem; text-transform: uppercase; color: var(--text-slate); letter-spacing: 0.3px; margin-bottom: 1px; }
+        .meta-val { font-weight: 600; color: #334155; }
+        .time-style { color: var(--accent-gold); font-weight: 700; }
+        .sponsor-full-span { grid-column: span 2; background-color: #f8fafc; padding: 6px 10px; border-radius: 6px; margin-top: 2px; }
+
+        .address-section {
+            margin-top: 12px;
+            padding: 10px;
+            background-color: #f8fafc;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            color: #475569;
+            border-left: 3px solid var(--primary-emerald);
+        }
+
+        .no-records { text-align: center; padding: 40px; color: var(--text-slate); font-style: italic; }
+        .loading { text-align: center; padding: 40px; color: var(--text-slate); }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="controls-sticky">
+        <input type="text" id="scheduleSearch" class="search-box" placeholder="🔍 Search events, dates, speakers, or sponsors...">
+        
+        <div class="tabs-container">
+            <button class="filter-btn active" onclick="filterCategory('ALL', this)" id="btn-all">All Events (0)</button>
+            <button class="filter-btn" onclick="filterCategory('MEN', this)" id="btn-men">Men (0)</button>
+            <button class="filter-btn" onclick="filterCategory('LADIES', this)" id="btn-ladies">Ladies (0)</button>
+        </div>
+
+        <div class="filters-row">
+            <select id="islamicFilter" class="filter-select" onchange="displayData()">
+                <option value="">All Islamic Dates</option>
+            </select>
+            <select id="georgianFilter" class="filter-select" onchange="displayData()">
+                <option value="">All Dates</option>
+            </select>
+        </div>
+
+        <div onclick="showSponsorModal()" class="sponsor-btn" id="sponsorBtn">
+            🎯 Available to Sponsor (0)
+        </div>
+    </div>
+
+    <div id="eventsContainer" class="events-feed"></div>
+</div>
+
+<div id="sponsorModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <div class="modal-title">🎯 Available to Sponsor</div>
+            <span class="close-btn" onclick="closeSponsorModal()">×</span>
+        </div>
+        <div class="modal-body" id="modalSponsorList">
+            </div>
+    </div>
+</div>
+
+<script>
+    let fullScheduleData = [];
+    let activeScope = 'ALL';
+    const listFeed = document.getElementById('eventsContainer');
+    const filterInput = document.getElementById('scheduleSearch');
+    const islamicSelect = document.getElementById('islamicFilter');
+    const georgianSelect = document.getElementById('georgianFilter');
+    const sponsorModal = document.getElementById('sponsorModal');
+    const modalSponsorList = document.getElementById('modalSponsorList');
+    const sponsorBtn = document.getElementById('sponsorBtn');
+
+    function getJsonUrl() {
+        const base = "https://raw.githubusercontent.com/MohammadiaCenter/eventsschedule/refs/heads/main/eventschedule.json";
+        return `${base}?v=${Date.now()}`;
+    }
+
+function formatTime(time) {
+    // Check if time is undefined, null, or the string "TBA"
+    if (!time || time === "TBA" || time === "N/A") return time;
+    
+    // Ensure we are working with a string before splitting
+    const timeStr = String(time);
+    
+    let [hours, minutes] = timeStr.split(':').map(Number);
+    
+    // Safety check in case splitting results in NaN
+    if (isNaN(hours) || isNaN(minutes)) return time;
+
+    const period = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12 || 12;
+    return `${hours}:${minutes.toString().padStart(2, '0')} ${period}`;
+}
+
+    function parseEventDate(georgianDate) {
+        const dateStr = georgianDate.replace(/Monday, |Tuesday, |Wednesday, |Thursday, |Friday, |Saturday, |Sunday, /, '');
+        return new Date(dateStr + ", 2026");
+    }
+
+    const monthOrder = {
+        "Zil Hijjah": 12, "Muharram": 1, "Safar": 2, "Rabi Ul Awwal": 3,
+        "Rabi Ul Akhir": 4, "Jumada Al Awwal": 5, "Jumada Al Thani": 6,
+        "Rajab": 7, "Shaban": 8, "Ramadan": 9, "Shawwal": 10, "Zil Qadah": 11
+    };
+
+    function parseIslamicDate(isoDate) {
+        if (!isoDate) return { monthNum: 99, day: 0 };
+        const match = isoDate.match(/^(\d+)\s+(.+)$/i);
+        if (!match) return { monthNum: 99, day: 0 };
+        return {
+            day: parseInt(match[1]),
+            monthNum: monthOrder[match[2].trim()] || 99
+        };
+    }
+
+    async function loadSchedule() {
+        listFeed.innerHTML = '<div class="loading">Loading latest schedule...</div>';
+        try {
+            const response = await fetch(getJsonUrl(), { cache: 'no-store' });
+            const data = await response.json();
+            fullScheduleData = data.schedule || [];
+            populateFilters();
+            displayData();
+        } catch (error) {
+            listFeed.innerHTML = '<div class="no-records">Failed to load schedule.</div>';
+            console.error(error);
+        }
+    }
+
+    function populateFilters() {
+        const islamicSet = new Set();
+        const georgianSet = new Set();
+
+        fullScheduleData.forEach(item => {
+            if (item.islamic_date) islamicSet.add(item.islamic_date);
+            if (item.georgian_date) georgianSet.add(item.georgian_date);
+        });
+
+        islamicSelect.innerHTML = '<option value="">All Islamic Dates</option>';
+        Array.from(islamicSet)
+            .sort((a, b) => {
+                const pa = parseIslamicDate(a);
+                const pb = parseIslamicDate(b);
+                if (pa.monthNum !== pb.monthNum) return pa.monthNum - pb.monthNum;
+                return pa.day - pb.day;
+            })
+            .forEach(date => {
+                const opt = document.createElement('option');
+                opt.value = date;
+                opt.textContent = date;
+                islamicSelect.appendChild(opt);
+            });
+
+        georgianSelect.innerHTML = '<option value="">All Dates</option>';
+        Array.from(georgianSet)
+            .sort((a, b) => parseEventDate(a) - parseEventDate(b))
+            .forEach(date => {
+                const opt = document.createElement('option');
+                opt.value = date;
+                opt.textContent = date;
+                georgianSelect.appendChild(opt);
+            });
+    }
+
+    function updateButtonCounts(filteredData) {
+        const total = filteredData.length;
+        const men = filteredData.filter(item => item.type === 'Men').length;
+        const ladies = filteredData.filter(item => item.type === 'Ladies').length;
+
+        // Calculates available positions across active dataset items
+        const availableSponsorsCount = filteredData.filter(item => {
+            const sponsorString = item.sponsors && String(item.sponsors).trim() ? String(item.sponsors).toLowerCase() : 'open';
+            return sponsorString.includes('open');
+        }).length;
+
+        document.getElementById('btn-all').textContent = `All Events (${total})`;
+        document.getElementById('btn-men').textContent = `Men (${men})`;
+        document.getElementById('btn-ladies').textContent = `Ladies (${ladies})`;
+        sponsorBtn.textContent = `🎯 Available to Sponsor (${availableSponsorsCount})`;
+    }
+
+    function showSponsorModal() {
+        // Keeps modal view matched strictly to the dynamically filtered subsets
+        const searchVal = filterInput.value.toLowerCase().trim();
+        const selectedIslamic = islamicSelect.value;
+        const selectedGeorgian = georgianSelect.value;
+
+        const openEvents = fullScheduleData.filter(item => {
+            if (activeScope === 'MEN' && item.type !== 'Men') return false;
+            if (activeScope === 'LADIES' && item.type !== 'Ladies') return false;
+            if (selectedIslamic && item.islamic_date !== selectedIslamic) return false;
+            if (selectedGeorgian && item.georgian_date !== selectedGeorgian) return false;
+
+            if (searchVal) {
+                const sponsorText = item.sponsors && String(item.sponsors).trim() ? String(item.sponsors).toLowerCase() : 'open';
+                const matchFound = (item.event && item.event.toLowerCase().includes(searchVal)) ||
+                                   (item.islamic_date && item.islamic_date.toLowerCase().includes(searchVal)) ||
+                                   (item.georgian_date && item.georgian_date.toLowerCase().includes(searchVal)) ||
+                                   (item.maulana && item.maulana.toLowerCase().includes(searchVal)) ||
+                                   sponsorText.includes(searchVal);
+                if (!matchFound) return false;
+            }
+
+            const sponsorString = item.sponsors && String(item.sponsors).trim() ? String(item.sponsors).toLowerCase() : 'open';
+            return sponsorString.includes('open');
+        });
+
+        modalSponsorList.innerHTML = '';
+
+        if (openEvents.length === 0) {
+            modalSponsorList.innerHTML = '<p style="text-align:center; color:#64748b; padding:20px;">No matching events currently available for sponsorship.</p>';
+        } else {
+            openEvents.forEach(item => {
+                const isLadies = item.type === 'Ladies';
+                const div = document.createElement('div');
+                div.style.cssText = 'background:#fffbeb; padding:14px; border-radius:10px; margin-bottom:12px; border-left:4px solid #eab308;';
+                div.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px;">
+                        <strong style="font-size:0.95rem; color:#0f172a; flex: 1; margin-right: 8px;">${item.event}</strong>
+                        <span class="date-badge ${isLadies ? 'ladies-badge' : 'general-badge'}" style="font-size: 0.75rem; padding: 4px 8px;">
+                            ${isLadies ? '♀ Ladies' : (item.type || 'Men')}
+                        </span>
+                    </div>
+                    <small style="color:#854d0e; font-weight:600;">${item.islamic_date} • ${item.georgian_date}</small>
+                `;
+                modalSponsorList.appendChild(div);
+            });
+        }
+
+        sponsorModal.style.display = 'flex';
+    }
+
+    function closeSponsorModal() {
+        sponsorModal.style.display = 'none';
+    }
+
+    function displayData() {
+        listFeed.innerHTML = '';
+        const searchVal = filterInput.value.toLowerCase().trim();
+        const selectedIslamic = islamicSelect.value;
+        const selectedGeorgian = georgianSelect.value;
+        const today = new Date();
+
+        let subset = fullScheduleData.filter(item => {
+            if (activeScope === 'MEN' && item.type !== 'Men') return false;
+            if (activeScope === 'LADIES' && item.type !== 'Ladies') return false;
+
+            if (selectedIslamic && item.islamic_date !== selectedIslamic) return false;
+            if (selectedGeorgian && item.georgian_date !== selectedGeorgian) return false;
+
+            if (!searchVal) return true;
+
+            const sponsorText = item.sponsors && String(item.sponsors).trim() ? String(item.sponsors).toLowerCase() : 'open';
+
+            return (item.event && item.event.toLowerCase().includes(searchVal)) ||
+                   (item.islamic_date && item.islamic_date.toLowerCase().includes(searchVal)) ||
+                   (item.georgian_date && item.georgian_date.toLowerCase().includes(searchVal)) ||
+                   (item.maulana && item.maulana.toLowerCase().includes(searchVal)) ||
+                   sponsorText.includes(searchVal);
+        });
+
+        subset.sort((a, b) => {
+            const dateA = parseEventDate(a.georgian_date);
+            const dateB = parseEventDate(b.georgian_date);
+            const isTodayA = dateA.toDateString() === today.toDateString();
+            const isTodayB = dateB.toDateString() === today.toDateString();
+            const isPastA = dateA < today && !isTodayA;
+            const isPastB = dateB < today && !isTodayB;
+
+            if (isTodayA && !isTodayB) return -1;
+            if (!isTodayA && isTodayB) return 1;
+            if (isPastA && !isPastB) return 1;
+            if (!isPastA && isPastB) return -1;
+            return dateA - dateB;
+        });
+
+        updateButtonCounts(subset);
+
+        if (subset.length === 0) {
+            listFeed.innerHTML = '<div class="no-records">No matching events found.</div>';
+            return;
+        }
+
+        subset.forEach(item => {
+            const isLadies = item.type === 'Ladies';
+            const eventDate = parseEventDate(item.georgian_date);
+            const isToday = eventDate.toDateString() === today.toDateString();
+            const isPast = eventDate < today && !isToday;
+
+            const card = document.createElement('div');
+            card.className = `event-card ${isLadies ? 'ladies-card' : ''}`;
+            if (isToday) card.classList.add('today');
+            if (isPast) card.classList.add('past');
+
+            let statusHTML = '';
+            if (isToday) statusHTML = `<span class="status-tag today-tag">Today</span>`;
+            else if (isPast) statusHTML = `<span class="status-tag past-tag">Past</span>`;
+
+            let addressHTML = item.address ? `
+                <div class="address-section">
+                    📍 <strong>Venue:</strong> ${item.address}
+                </div>` : '';
+
+            card.innerHTML = `
+                ${statusHTML}
+                <div class="card-top">
+                    <span class="date-badge ${isLadies ? 'ladies-badge' : 'general-badge'}">
+                        ${isLadies ? '♀ Ladies' : (item.type || 'Men')}
+                    </span>
+                    <div class="date-badges">
+                        <span class="date-badge general-badge">${item.islamic_date}</span>
+                        <span class="date-badge general-badge">${item.georgian_date}</span>
+                    </div>
+                </div>
+                <div class="event-title">${item.event}</div>
+                <div class="meta-grid">
+                    <div class="meta-item">
+                        <span class="meta-label">🕒 Time</span>
+                        <span class="meta-val time-style">${formatTime(item.time)}</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">🎤 Speaker</span>
+                        <span class="meta-val">${item.maulana || '—'}</span>
+                    </div>
+                    <div class="meta-item sponsor-full-span">
+                        <span class="meta-label">🤝 Sponsors</span>
+                        <span class="meta-val" style="font-size: 0.85rem;">${item.sponsors && String(item.sponsors).trim() ? item.sponsors : 'Open'}</span>
+                    </div>
+                </div>
+                ${addressHTML}
+            `;
+            listFeed.appendChild(card);
+        });
+    }
+
+    function filterCategory(category, element) {
+        activeScope = category;
+        document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+        element.classList.add('active');
+        displayData();
+    }
+
+    sponsorModal.addEventListener('click', function(e) {
+        if (e.target === sponsorModal) closeSponsorModal();
+    });
+
+    filterInput.addEventListener('input', displayData);
+    window.onload = loadSchedule;
+</script>
+</body>
+</html>
