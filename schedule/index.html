@@ -245,18 +245,7 @@
             </div>
     </div>
 </div>
-<script>
-  function sendHeight() {
-    // Get the height of the page content
-    const height = document.body.scrollHeight;
-    // Send the height to the WordPress parent
-    window.parent.postMessage(height, "*");
-  }
 
-  // Send height when the page loads and if the window is resized
-  window.onload = sendHeight;
-  window.onresize = sendHeight;
-</script>
 <script>
     let fullScheduleData = [];
     let activeScope = 'ALL';
