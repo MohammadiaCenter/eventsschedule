@@ -262,13 +262,22 @@
         return `${base}?v=${Date.now()}`;
     }
 
-    function formatTime(time) {
-        if (!time || time === "TBA") return time;
-        let [hours, minutes] = time.split(':').map(Number);
-        const period = hours >= 12 ? 'PM' : 'AM';
-        hours = hours % 12 || 12;
-        return `${hours}:${minutes.toString().padStart(2, '0')} ${period}`;
-    }
+function formatTime(time) {
+    // Check if time is undefined, null, or the string "TBA"
+    if (!time || time === "TBA" || time === "N/A") return time;
+    
+    // Ensure we are working with a string before splitting
+    const timeStr = String(time);
+    
+    let [hours, minutes] = timeStr.split(':').map(Number);
+    
+    // Safety check in case splitting results in NaN
+    if (isNaN(hours) || isNaN(minutes)) return time;
+
+    const period = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12 || 12;
+    return `${hours}:${minutes.toString().padStart(2, '0')} ${period}`;
+}
 
     function parseEventDate(georgianDate) {
         const dateStr = georgianDate.replace(/Monday, |Tuesday, |Wednesday, |Thursday, |Friday, |Saturday, |Sunday, /, '');
