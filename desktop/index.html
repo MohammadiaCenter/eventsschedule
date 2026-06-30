@@ -27,7 +27,6 @@
             padding: 24px;
         }
 
-        /* 1. Increased maximum container width to give the table more horizontal workspace */
         .container {
             width: 95%;
             max-width: 1800px;
@@ -116,7 +115,6 @@
             background-color: #059669;
         }
 
-        /* Recovery Banner Alert */
         .recovery-banner {
             background-color: #2e2213;
             border: 1px solid var(--warning-color);
@@ -142,7 +140,7 @@
             overflow: hidden;
             border: 1px solid #23263a !important;
             background: var(--panel-bg) !important;
-            width: 100%; /* 2. Force the table element to take the full width of the container */
+            width: 100%;
         }
 
         .status-message {
@@ -174,6 +172,7 @@
     <header>
         <h1>Events Schedule Data Grid</h1>
         <div class="toolbar">
+            <button id="export-btn">Export to CSV</button>
             <button id="add-row-btn">+ Add Row</button>
             <button id="delete-row-btn" class="btn-danger">Delete Selected Row(s)</button>
             <button id="save-btn" class="btn-success">Save & Push to GitHub</button>
@@ -196,7 +195,7 @@
         {formatter:"rowSelection", titleFormatter:"rowSelection", hozAlign:"center", headerSort:false, width:45, frozen:true},
         {title:"Type", field:"type", editor:"list", editorParams:{values:["Men", "Ladies", "General"]}, width:100},
         {title:"Islamic Date", field:"islamic_date", editor:"input", width:140},
-        {title:"Georgian Date", field:"georgian_date", editor:"input", width:160},
+        {title:"Gregorian Date", field:"georgian_date", editor:"input", width:160},
         {title:"Time", field:"time", editor:"input", width:100},
         {title:"Event Name / Title", field:"event", editor:"input", width:320},
         {title:"Maulana / Speaker", field:"maulana", editor:"input", width:180},
@@ -204,7 +203,6 @@
         {title:"Address", field:"address", editor:"input", width:300}
     ];
 
-    // Reverted back to fitColumns layout mode inside our freshly expanded dashboard frame
     table = new Tabulator("#events-table", {
         columns: tableColumns,
         layout: "fitColumns", 
@@ -214,6 +212,11 @@
         dataChanged: function(data) {
             saveDraftToLocalStorage(data);
         }
+    });
+
+    // Added Export Trigger
+    document.getElementById('export-btn').addEventListener('click', () => {
+        table.download("csv", "schedule_export.csv");
     });
 
     window.addEventListener('DOMContentLoaded', () => {
